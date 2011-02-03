@@ -1,7 +1,7 @@
 <?php
-    include_once("/pos/is4c/lib/initialize.php");
+    include_once("pos/is4c/lib/initialize.php");
     if (!function_exists("get_users")) {
-        include_once("/pos/is4c/lib/query.php");
+        include_once("$ROOT/pos/is4c/lib/query.php");
     }
 
     function get_config_auto($config_item){

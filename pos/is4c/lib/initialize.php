@@ -1,8 +1,9 @@
 <?php
+    $ROOT = "/home/k/IS4C";
     if (!isset($_SESSION["DBMS"]) || empty($_SESSION['DBMS']))
     {
-        $handle = fopen("/pos/db_connect", "r");
-        $contents = fread($handle, filesize("/pos/db_connect"));
+        $handle = fopen("$ROOT/pos/db_connect", "r");
+        $contents = fread($handle, filesize("$ROOT/pos/db_connect"));
         fclose($handle);
 
         preg_match('/[\r\n]?database:[^\r\n]*\n/', $contents, $match);

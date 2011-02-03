@@ -86,8 +86,9 @@
                         <tr>
                             <td>
                                 <span style='font-weight: bold;'>log in</span>
-                                <form name='form' method='post' autocomplete='off' action='lib/authenticate.php'>
+                                <form name='login_form' method='post' autocomplete='off' action='lib/authenticate.php'>
                                     <input type='password' name='reginput' size='20' tabindex='0' onblur='document.form.reginput.focus();' />
+                                    <input type='hidden' name='test' value='test'>
                                 </form>
                                 <br />
                                 <?php

@@ -21,12 +21,12 @@
 
 *********************************************************************************/
     if (!function_exists("get_config_auto")) {
-        include_once("/pos/is4c/lib/conf.php");
+        include_once("/home/k/IS4C/pos/is4c/lib/conf.php");
         apply_configurations();
     }
 
     if (!function_exists("pDataConnect")) {
-        include("../connect.php");
+        include("../pos/is4c/connect.php");
     }
     if (!function_exists("tDataConnect")) {
         include("../connect.php");
@@ -45,8 +45,10 @@
     rePoll();
     $_SESSION["training"] = 0;
 
-    $password = str_replace(array("TRAINING", "'", ",", "+"), array('9999', ""), strtoupper(trim($_POST["reginput"])));
-
+    if (isset($_POST['reginput'])) {
+      $password = str_replace(array("TRAINING", "'", ",", "+"), array('9999', ""), strtoupper(trim($_POST["reginput"])));
+    }
+ 
     $global_values = get_global_values();
 
     if (!$global_values["LoggedIn"]) {
@@ -103,7 +105,7 @@
                 header("Location:/login.php");
             }
 
-            sql_close($db_a);
+            if (isset($db_a)) { sql_close($db_a); }
         }
     }
 
