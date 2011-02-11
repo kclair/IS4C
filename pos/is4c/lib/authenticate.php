@@ -21,12 +21,12 @@
 
 *********************************************************************************/
     if (!function_exists("get_config_auto")) {
-        include_once("/home/k/IS4C/pos/is4c/lib/conf.php");
+        include_once("pos/is4c/lib/conf.php");
         apply_configurations();
     }
 
     if (!function_exists("pDataConnect")) {
-        include("../pos/is4c/connect.php");
+        include("pos/is4c/connect.php");
     }
     if (!function_exists("tDataConnect")) {
         include("../connect.php");

@@ -3,7 +3,7 @@
     <body bgcolor='#ffffff'>
         <?
             if (!function_exists("get_config_auto")) {
-                include_once("/pos/is4c/lib/conf.php");
+                include_once("pos/is4c/lib/conf.php");
                 apply_configurations();
             }
             include_once("session.php");
