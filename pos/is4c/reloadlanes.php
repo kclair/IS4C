@@ -4,12 +4,6 @@
    --kclair 02/11/2011
 */
 
-$lockfile = __DIR__ . '/download/stop.lck';
-
-if (file_exists($lockfile)) {
-  die("lock file found! see contents for details.\n");
-}
-
 $tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
 
 foreach ($tables as $t) {
@@ -62,11 +56,7 @@ function synctable($table) {
 }
 
 function error_and_die($com, $error) {
-  $lck = $GLOBALS["lockfile"];
   $errstr = "failed to execute '$com': $error\n";
-  $lock = fopen($lck, 'w') or die("Could not open lockfile! ($lck)\n");
-  fwrite($lock, $errstr); 
-  fclose($lock);
   die($errstr);
 }
 
