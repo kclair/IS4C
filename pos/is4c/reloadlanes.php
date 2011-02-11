@@ -1,48 +1,64 @@
 <?
 
+/* modified to only sync data on local server 
+   --kclair 02/11/2011
+*/
+
+$tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
+
+foreach ($tables as $t) {
+  synctable($t);
+}
+
 function synctable($table) {
     $table = strtolower($table);
-    $aLane = array("192.168.123.101", "192.168.123.102", "192.168.123.103");
 
-    $server = "192.168.123.100";
+    $server = "192.168.1.109";
     $serveruser = "root";
-    $serverpass = "";
+    $serverpass = "is4c";
 
+    $laneserver = "localhost";
     $laneuser = "root";
-    $lanepass = "";
+    $lanepass = "is4c";
 
-    $outfile = "/pos/is4c/download/" . $table . ".out";
+    $outfile = "/home/k/IS4C/pos/is4c/download/" . $table . ".sql";
+    $mysqldump = "mysqldump -u $serveruser --password=$serverpass -h $server ";
+    $mysqldump .= "--add-drop-table --complete-insert --create-options is4c_op $table ";
+    $mysqldump .= "> $outfile";
 
-    $makeoutfile = "select * into outfile '" . $outfile . "' from " . $table;
-    $load = "load data infile '" . $outfile . "' into table " . $table;
-    $truncatelocal = "truncate table " . $table;
-    $insertlocal = "insert into " . table . " select * from is4c_op." . $table;
+    $exec_commands = array($mysqldump, 
+      "mysql -u $laneuser --password=$lanepass -h $laneserver is4c_op < $outfile"
+    );
 
-    // establish connect to server
-    $conn = mysql_connect($server, $serveruser, $serverpass)) or die("Unable to connect to server database");
-    mysql_select_db("is4c_op", $conn) or die("unsable to connect to database is4c_op on server");
+    $opdata_commands = array(
+      "CREATE TABLE IF NOT EXISTS ".$table."_bak LIKE ".$table,
+      "truncate table ".$table."_bak",
+      "insert into " . $table . "_bak select * from " . $table,
+      "replace into " . $table . " select * from is4c_op." . $table
+    );
 
     if (file_exists($outfile)) {
         exec("rm ".$outfile);
     }
 
-    mysql_query($makeoutfile, $conn) or die ("Failed to create outfile from server table " . $table);
+    foreach ($exec_commands as $ecom) {
+      $out = system($ecom);
+      if ($out) { error_and_die($ecom, $out); }
+    }
 
     if (file_exists($outfile)) {
-        $i = 1;
-        foreach($aLane as $lane) {
-            $lanenum = "lane " . $i;
-            $i++;
-            $lane_conn = mysql_connect($lane, $laneuser, $lanepass) or die ("Failed to connect to "  .$lanenum);
-            mysql_select_db("is4c_op", $lane_conn) or die ("Failed to connect to database is4c_op on " . $lanenum);
-            mysql_query($load, $lane_conn) or die ("Failed to load data into is4c_op." . $table . " on " . $lanenum);
-            mysql_query($truncatelocal, $lane_conn) or die ("Failed to truncate old table " . $table . " on " . $lanenum);
-            mysql_query($insertlocal, $lane_conn) or die ("Failed to insert new data from is4c_op." . $table . " on " . $lanenum);
-            echo $lanenum . " successfully synchronized";
+        $lane_conn = mysql_connect($laneserver, $laneuser, $lanepass) or die ("Failed to connect to "  .$laneserver);
+        mysql_select_db("opdata", $lane_conn) or error_and_die ("select database opdata", mysql_error());
+        foreach ($opdata_commands as $ocom) {
+          mysql_query($ocom, $lane_conn) or error_and_die ($ocom, mysql_error());
         }
     } 
     else {
         echo "<p>Outfile from server not found</p>";
     }
+}
+
+function error_and_die($com, $error) {
+  die('Failed to execute: '.$com.' : '.$error);
 }
 
