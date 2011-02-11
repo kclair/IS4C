@@ -4,6 +4,12 @@
    --kclair 02/11/2011
 */
 
+$lockfile = __DIR__ . '/download/stop.lck';
+
+if (file_exists($lockfile)) {
+  die("lock file found! see contents for details.\n");
+}
+
 $tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
 
 foreach ($tables as $t) {
@@ -26,7 +32,9 @@ function synctable($table) {
     $mysqldump .= "--add-drop-table --complete-insert --create-options is4c_op $table ";
     $mysqldump .= "> $outfile";
 
-    $exec_commands = array($mysqldump, 
+    $exec_commands = array(
+      "rm -f $outfile",
+      $mysqldump, 
       "mysql -u $laneuser --password=$lanepass -h $laneserver is4c_op < $outfile"
     );
 
@@ -37,28 +45,28 @@ function synctable($table) {
       "replace into " . $table . " select * from is4c_op." . $table
     );
 
-    if (file_exists($outfile)) {
-        exec("rm ".$outfile);
-    }
-
     foreach ($exec_commands as $ecom) {
-      $out = system($ecom);
-      if ($out) { error_and_die($ecom, $out); }
+      $out = system("$ecom");
     }
 
-    if (file_exists($outfile)) {
-        $lane_conn = mysql_connect($laneserver, $laneuser, $lanepass) or die ("Failed to connect to "  .$laneserver);
+    if (filesize($outfile) > 0) {
+        $lane_conn = mysql_connect($laneserver, $laneuser, $lanepass) or error_and_die("connect to $laneserver", mysql_error());
         mysql_select_db("opdata", $lane_conn) or error_and_die ("select database opdata", mysql_error());
         foreach ($opdata_commands as $ocom) {
           mysql_query($ocom, $lane_conn) or error_and_die ($ocom, mysql_error());
         }
     } 
     else {
-        echo "<p>Outfile from server not found</p>";
+        die("outfile ($outfile) is empty.\n");
     }
 }
 
 function error_and_die($com, $error) {
-  die('Failed to execute: '.$com.' : '.$error);
+  $lck = $GLOBALS["lockfile"];
+  $errstr = "failed to execute '$com': $error\n";
+  $lock = fopen($lck, 'w') or die("Could not open lockfile! ($lck)\n");
+  fwrite($lock, $errstr); 
+  fclose($lock);
+  die($errstr);
 }
 
