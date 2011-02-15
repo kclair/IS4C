@@ -55,10 +55,14 @@
 			<h1>Synchronize '.$type.'</h1>
 			<form action="./synchronize.php" method="post" name="synchronize">';
 	
-// TODO - Auto generate lanes from define.conf, for now, hardcode
-	$lanes=array(
-		array('Name'=>'Lane 01', 'IP'=>'10.10.10.53')
-	);
+        $lanes = array();
+        foreach(range(1, 100) as $laneno) {
+          if ($laneno < 10) { $laneno = 0 . $laneno;}
+          $laneip = constant("LANE$laneno");
+          if (defined("LANE$laneno")) {
+            $lanes[] = array('Name' => "Lane $laneno", 'IP' => $laneip);
+          }
+        }
 	
 	foreach ($lanes as $lane) {
 		$html.='
