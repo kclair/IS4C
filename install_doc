@@ -1,0 +1,10 @@
+apt-get install mysql-server git-core python-mysqldb libmodphp5 php5-mysql
+
+git clone git://github.com/kclair/IS4C.git
+
+* change apache docroot to IS4C/pos/backend
+
+* update pos/fannie/define.conf with lane info
+
+* python IS4C/pos/installation/install_server.py
+
