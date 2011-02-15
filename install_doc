@@ -1,0 +1,26 @@
+installed packages:
+* git-core
+* libapache2-mod-php5
+* php5-mysql
+* mysql-server
+* python-mysqldb
+
+run:
+git clone git://github.com/kclair/IS4C.git
+python IS4C/pos/installation/install_lane.py
+
+edit /etc/apache2/sites-available/default for:
+  DocumentRoot ... 
+  DirectoryIndex login.php index.php
+
+edit /etc/php5/apache2/php.ini for:
+  session.auto_start = 1
+  short_open_tag = On
+  error_log = php_errors.log
+  log_errors = On
+
+edit $ROOT in pos/is4c/lib/initialize.php
+
+http://localhost/configure.php
+pDatabase: opdata
+tDatabase: translog
