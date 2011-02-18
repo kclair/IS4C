@@ -15,7 +15,7 @@ if (!$desc or !$total or !$id) {
   respond_with(400, 0, 'description, total, and member id are required');
 }
 
-if (!$_POST['auth_token'] or !($_POST['auth_token'] == $_SESSION['auth_toke'])) {
+if (!$_POST['auth_token'] or !($_POST['auth_token'] == $_SESSION['auth_token'])) {
   respond_with(403, 0, 'Forbidden');
 }
 
