@@ -1,0 +1,8 @@
+USE `is4c_log`;
+
+DROP TRIGGER IF EXISTS `update_balance`;
+
+CREATE TRIGGER `update_balance` AFTER INSERT ON `dtransactions` 
+  FOR EACH ROW 
+  UPDATE is4c_op.custdata SET Balance=(is4c_op.custdata.Balance + NEW.total) 
+  WHERE is4c_op.custdata.CardNo = NEW.card_no

@@ -19,6 +19,7 @@ def install_server_db(username, password, sample_data=False):
             'is4c_log/views/dlog.viw',
             'is4c_log/views/tendertape.viw',
             ])
+    exec_scripts(connection, 'is4c_log/triggers/*.tgr')
 
     exec_scripts(connection, 'is4c_op/tables/*.table')
     exec_scripts(connection, 'is4c_op/views/*.viw')
