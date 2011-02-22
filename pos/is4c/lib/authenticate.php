@@ -21,24 +21,24 @@
 
 *********************************************************************************/
     if (!function_exists("get_config_auto")) {
-        include_once("pos/is4c/lib/conf.php");
+        include_once($_SERVER['DOCUMENT_ROOT']."/lib/conf.php");
         apply_configurations();
     }
 
     if (!function_exists("pDataConnect")) {
-        include("pos/is4c/connect.php");
+        include($_SERVER['DOCUMENT_ROOT']."/connect.php");
     }
     if (!function_exists("tDataConnect")) {
-        include("../connect.php");
+        include($_SERVER['DOCUMENT_ROOT']."/connect.php");
     }
     if (!function_exists("addactivity")) {
-        include("../additem.php");
+        include($_SERVER['DOCUMENT_ROOT']."/additem.php");
     }
     if (!function_exists("loginscreen")) {
-        include("../clientscripts.php");
+        include($_SERVER['DOCUMENT_ROOT']."/clientscripts.php");
     }
     if (!function_exists("memberID")) {
-        include("../prehkeys.php");
+        include($_SERVER['DOCUMENT_ROOT']."/prehkeys.php");
     }
 
     $_SESSION["away"] = 1;

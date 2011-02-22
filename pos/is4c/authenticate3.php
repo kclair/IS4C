@@ -22,7 +22,7 @@
 *********************************************************************************/
 
 if (!function_exists("get_config_auto")) {
-    include_once("pos/is4c/lib/conf.php");
+    include_once("lib/conf.php");
     apply_configurations();
 }
 if(!function_exists("pconnect")) include("connect.php");

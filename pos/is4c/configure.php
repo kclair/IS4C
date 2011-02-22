@@ -1,6 +1,6 @@
 <?php
     include_once("lib/conf.php");
-	include_once("connect.php");
+	include_once($_SERVER['DOCUMENT_ROOT']."/connect.php");
     include_once("lib/query.php");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"

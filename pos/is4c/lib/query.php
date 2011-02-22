@@ -1,6 +1,6 @@
 <?php
     if (!function_exists("pDataConnect")) {
-        include_once("pos/is4c/connect.php");
+        include_once($_SERVER['DOCUMENT_ROOT']."/connect.php");
     }
 
     /*Returns an associative array of active employees.*/

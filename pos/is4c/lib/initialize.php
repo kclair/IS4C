@@ -1,5 +1,5 @@
 <?php
-    $ROOT = "/home/k/IS4C";
+    $ROOT = $_SERVER['DOCUMENT_ROOT'].'/../..';
     if (!isset($_SESSION["DBMS"]) || empty($_SESSION['DBMS']))
     {
         $handle = fopen("$ROOT/pos/db_connect", "r");
