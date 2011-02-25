@@ -53,6 +53,7 @@ $UPC = 15;
 $CATEGORY = 5;
 $WHOLESALE = 9;
 $DISCOUNT = 9;
+$SRP = 10;
 
 $VENDOR_ID = 1;
 $PRICEFILE_USE_SPLITS = True;
@@ -119,6 +120,7 @@ while(!feof($fp)){
 	$category = $data[$CATEGORY];
 	$wholesale = trim($data[$WHOLESALE]);
 	$discount = trim($data[$DISCOUNT]);
+        $srp = $data[$SRP];
 	// can't process items w/o price (usually promos/samples anyway)
 	if (empty($wholesale) or empty($discount))
 		continue;
@@ -135,6 +137,8 @@ while(!feof($fp)){
 	$description = preg_replace("/\'/","",$description);
 	$wholesale = preg_replace("/\\\$/","",$wholesale);
 	$wholesale = preg_replace("/,/","",$wholesale);
+	$srp = preg_replace("/\\\$/","",$srp);
+	$srp = preg_replace("/,/","",$srp);
 	$discount = preg_replace("/\\\$/","",$discount);
 	$discount = preg_replace("/,/","",$discount);
 
@@ -142,16 +146,18 @@ while(!feof($fp)){
 	// this will catch the 'label' line in the first CSV split
 	// since the splits get returned in file system order,
 	// we can't be certain *when* that chunk will come up
-	if (!is_numeric($wholesale) or !is_numeric($discount))
+	if (!is_numeric($wholesale) or !is_numeric($discount) or !is_numberic($srp))
 		continue;
 
 	// need unit cost, not case cost
 	$net_cost = $discount / $qty;
 
 	// set cost in $PRICEFILE_COST_TABLE
-	$upQ = "update prodExtra set cost=$net_cost where upc='$upc'";
-	$upR = $dbc->query($upQ);
+	//$upQ = "update prodExtra set cost=$net_cost where upc='$upc'";
+	//$upR = $dbc->query($upQ);
 	$upQ = "update products set cost=$net_cost where upc='$upc'";
+	$upR = $dbc->query($upQ);
+	$upQ = "update products set normal_price=$srp where upc='$upc'";
 	$upR = $dbc->query($upQ);
 	// end $PRICEFILE_COST_TABLE cost tracking
 
@@ -165,7 +171,8 @@ while(!feof($fp)){
 	// I'm calculating margins based on an in-house table of UNFI catagory ID #s
 	// and desired margins. Alternatively, SRP could be lifted right out
 	// of the CSV file
-	$marginQ = "select margin from unfiCategories where categoryID = $category";
+	/* we're using srp
+        $marginQ = "select margin from unfiCategories where categoryID = $category";
 	$marginR = $dbc->query($marginQ);
 	$margin = 0.45;
 	if ($dbc->num_rows($marginR) > 0)
@@ -179,6 +186,7 @@ while(!feof($fp)){
 	       substr($srp,strlen($srp)-1,strlen($srp)) != "9")
 		$srp += 0.01;
 	// end margin calculations
+        */
 
 	// UNFI_order is what the UNFI price change page builds on,
 	// that's why it's being populated here
