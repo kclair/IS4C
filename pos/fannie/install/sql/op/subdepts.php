@@ -21,6 +21,7 @@ $CREATE['op.subdepts'] = "
 	  `subdept_no` smallint(4) NOT NULL, 
 	  `subdept_name` varchar(30) default NULL,
 	  `dept_ID` smallint(4) default NULL,
+          `subdept_fs` tinyint(1) default NULL,
 	  KEY `subdept_no` (`subdept_no`),
 	  KEY `subdept_name` (`subdept_name`)
 	) 
