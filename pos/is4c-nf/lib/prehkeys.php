@@ -114,6 +114,7 @@ function setMember($member, $personNumber, $row) {
 	$IS4C_LOCAL->set("fname",$row["FirstName"]);
 	$IS4C_LOCAL->set("Type",$row["Type"]);
 	$IS4C_LOCAL->set("percentDiscount",$row["Discount"]);
+        $IS4C_LOCAL->set("Balance", $row["Balance"]);
 
 	$IS4C_LOCAL->set('inactMem',0);
 	if ($IS4C_LOCAL->get("Type") == "PC") {

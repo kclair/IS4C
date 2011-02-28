@@ -251,12 +251,16 @@ function printheaderb() {
 
 	if ($IS4C_LOCAL->get("memberID") == "0") {
 		$strmemberID = "";
+                $balance = '';
 	}
 	else {
 		$strmemberID = $IS4C_LOCAL->get("memMsg");
 		if ($IS4C_LOCAL->get("isMember") == 0){
 			$strmemberID = str_replace("(0)", "(n/a)", $strmemberID);
-		}
+                        $balance = '';
+		}else {
+                  $balance = "<br><span class=\"bigger\">B A L A N C E: ".number_format($IS4C_LOCAL->get("Balance"),2)."</span>";
+                }
 	}
 
 	$ret = '
@@ -266,6 +270,7 @@ function printheaderb() {
 			<span class="smaller">
 			'.$strmemberID.'
 			</span>
+                        '.$balance.'
 		</div>
 		<div class="right">
 			<span class="bigger">C A S H I E R &nbsp;&nbsp;</span>
