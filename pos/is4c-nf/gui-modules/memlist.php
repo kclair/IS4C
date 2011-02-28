@@ -79,6 +79,15 @@ class memlist extends NoInputPage {
 		// if there's one result and either
 		// then set the member number
 		if ($num_rows == 1) {
+                        //once we have one result, do the real query
+			$row = $db_a->fetch_array($result);
+                $query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
+                accounts.balance as Balance,accounts.discount as Discount,
+                custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
+                custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
+                from custdata, accounts
+                where custdata.account_id = accounts.id and custdata.CardNo = '".$row["CardNo"]."'";
+                        $result = $db_a->query($query);
 			$row = $db_a->fetch_array($result);
 			setMember($row["CardNo"], $personNum,$row);
 			$IS4C_LOCAL->set("scan","scan");
