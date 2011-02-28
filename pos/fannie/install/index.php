@@ -681,6 +681,9 @@ function create_trans_dbs($con){
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'valutecRequestMod','trans');
 
+        /* trigger to update balance on transactions */
+        
+
 	/* invoice stuff is very beta; not documented yet */
 	$invCur = "CREATE TABLE InvDelivery (
 		inv_date datetime,
