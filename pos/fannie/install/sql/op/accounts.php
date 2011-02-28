@@ -37,32 +37,4 @@ $CREATE['op.accounts'] = "
 	)
 ";
 
-if ($dbms == "MSSQL"){
-	$CREATE['op.custdata'] = "
-		CREATE TABLE [custdata] (
-			[CardNo] [varchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[personNum] [varchar] (3) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[LastName] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[FirstName] [varchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[CashBack] [money] NULL ,
-			[Balance] [money] NULL ,
-			[Discount] [smallint] NULL ,
-			[MemDiscountLimit] [money] NULL ,
-			[ChargeOk] [bit] NULL ,
-			[WriteChecks] [bit] NULL ,
-			[StoreCoupons] [bit] NULL ,
-			[Type] [varchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[memType] [smallint] NULL ,
-			[staff] [tinyint] NULL ,
-			[SSI] [tinyint] NULL ,
-			[Purchases] [money] NULL ,
-			[NumberOfChecks] [smallint] NULL ,
-			[memCoupons] [int] NULL ,
-			[blueLine] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
-			[Shown] [tinyint] NULL ,
-			[id] [int] IDENTITY (1, 1) NOT NULL 
-		) ON [PRIMARY]
-	";
-}
-
 ?>
