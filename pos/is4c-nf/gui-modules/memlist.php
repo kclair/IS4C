@@ -82,7 +82,7 @@ class memlist extends NoInputPage {
                         //once we have one result, do the real query
 			$row = $db_a->fetch_array($result);
                 $query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
-                accounts.balance as Balance,accounts.discount as Discount,
+                accounts.balance as Balance,accounts.discount as Discount, accounts.name,
                 custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
                 custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
                 from custdata, accounts

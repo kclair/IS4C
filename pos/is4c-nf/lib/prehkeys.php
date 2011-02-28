@@ -103,7 +103,7 @@ function setMember($member, $personNumber, $row) {
 
 	$conn = pDataConnect();
 
-	$IS4C_LOCAL->set("memMsg",blueLine($row));
+	$IS4C_LOCAL->set("memMsg",$row['name']);
 	$chargeOk = chargeOk();
 	if ($IS4C_LOCAL->get("balance") != 0 && $member != $IS4C_LOCAL->get("defaultNonMem"))
 	      $IS4C_LOCAL->set("memMsg",$IS4C_LOCAL->get("memMsg")." AR");
