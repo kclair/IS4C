@@ -17,3 +17,4 @@
 (17,'TV','Travelers Check','CK','Change',0,500,500)
 (18,'MA','MAD Coupon','CA','',0.01,2.5,0)
 (19,'RR','RRR Coupon','CA','',0.01,1,0)
+(20,'MB','Member Balance','','',0,999,999)
