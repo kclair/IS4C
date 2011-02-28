@@ -4,6 +4,7 @@ Table: custdata
 
 Columns:
 	CardNo int
+        account_id int
 	personNum tinyint
 	LastName varchar
 	FirstName varchar
