@@ -10,6 +10,7 @@ CREATE TABLE `UNFI` (
   `cost` decimal(9,2) default NULL,
   `description` varchar(35) default NULL,
   `depart` varchar(15) default NULL,
+  `custom srp`, decimal(9,2) default NULL,
   PRIMARY KEY  (`upc`),
   KEY `newindex` (`upc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
