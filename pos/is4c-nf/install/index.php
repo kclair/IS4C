@@ -402,16 +402,16 @@ function create_op_dbs($db,$type){
           `id` int(8) NOT NULL,
           `CardNo` int(8) NOT NULL,
           `name` varchar(255) NOT NULL,
-          `balance` double NOT NULL default '0',
+          `balance` double NOT NULL default 0.00,
           `discount` smallint(6) default NULL,
-          `max_balance` double NOT NULL default '0'
+          `max_balance` double NOT NULL default 0.00,
           PRIMARY KEY  (`name`),
-          KEY `CardNo` (`id`),
+          KEY `CardNo` (`CardNo`),
+          KEY `id` (`id`)
         )";
         if (!$db->table_exists("accounts", $name)) {
           $db->query($accountsQ, $name);
         }
-
 
 	$deptQ = "CREATE TABLE departments (
 		dept_no smallint,
