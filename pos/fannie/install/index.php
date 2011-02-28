@@ -584,6 +584,9 @@ function create_op_dbs($con){
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_OP_DB,
 			'custdata','op');
 
+        create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_OP_DB,
+                        'accounts','op');
+
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_OP_DB,
 			'meminfo','op');
 
