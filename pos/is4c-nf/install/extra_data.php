@@ -41,6 +41,11 @@ elseif(isset($_REQUEST['custdata'])){
 	$db->query("TRUNCATE TABLE custdata");
 	loaddata($db,'custdata');
 }
+elseif(isset($_REQUEST['accounts'])){
+        echo "Loading accounts";
+        $db->query("TRUNCATE TABLE accounts");
+        loaddata($db,'accounts');
+}
 elseif(isset($_REQUEST['products'])){
 	echo "Loading products";
 	$db->query("TRUNCATE TABLE products");
@@ -67,9 +72,13 @@ included logins are '56' and '7000'.<br />
 <hr />
 <b>Custdata</b><br />
 Customer data is the membership information. Sample data includes
- a way too many mostly identical lines. A very scrubbed version
-of someone's customer table I think.<br />
+ a  handful of fake customers.<br />
 <input type=submit name=custdata value="Load sample customers" />
+<hr />
+<b>Accounts</b><br />
+Accounts data is the accounts information. Sample data includes
+ a handful of fake accounts.<br />
+<input type=submit name=accounts value="Load sample customers" />
 <hr />
 <b>Products</b><br />
 Stuff to sell. There's a lot of sample data. I think this might

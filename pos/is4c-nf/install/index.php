@@ -343,7 +343,8 @@ function create_op_dbs($db,$type){
 	}
 
 	$custDataQ = "CREATE TABLE `custdata` (
-	  `CardNo` int(8) default NULL,
+	  `CardNo` int(8) NOT NULL,
+          `account_id` int(8) NOT NULL,
 	  `personNum` tinyint(4) NOT NULL default '1',
 	  `LastName` varchar(30) default NULL,
 	  `FirstName` varchar(30) default NULL,
@@ -396,6 +397,21 @@ function create_op_dbs($db,$type){
 	if (!$db->table_exists('custdata',$name)){
 		$db->query($custDataQ,$name);
 	}
+
+        $accountsQ = "CREATE TABLE `accounts` (
+          `id` int(8) NOT NULL,
+          `CardNo` int(8) NOT NULL,
+          `name` varchar(255) NOT NULL,
+          `balance` double NOT NULL default '0',
+          `discount` smallint(6) default NULL,
+          `max_balance` double NOT NULL default '0'
+          PRIMARY KEY  (`name`),
+          KEY `CardNo` (`id`),
+        )";
+        if (!$db->table_exists("accounts", $name)) {
+          $db->query($accountsQ, $name);
+        }
+
 
 	$deptQ = "CREATE TABLE departments (
 		dept_no smallint,
