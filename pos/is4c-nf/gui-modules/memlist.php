@@ -70,8 +70,8 @@ class memlist extends NoInputPage {
 		$memberID = $entered;
 		$db_a = pDataConnect();
 
-                $query = "select CardNo, balance as Balance, discount as Discount from accounts 
-                          where name LIKE '".$entered."'order by name";
+                $query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
+                          where name LIKE '".$entered."%'order by name";
 
 		$result = $db_a->query($query);
 		$num_rows = $db_a->num_rows($result);
