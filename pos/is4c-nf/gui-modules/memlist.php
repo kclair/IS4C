@@ -57,12 +57,6 @@ class memlist extends NoInputPage {
 
 		$personNum = 1;
 		$selected_name = False;
-		if (strstr($entered,"::") !== False){
-			$tmp = explode("::",$entered);
-			$entered = $tmp[0];
-			$personNum = $tmp[1];
-			$selected_name = True;
-		}
 
 		// No input available, stop
 		if (!$entered || strlen($entered) < 1 || $entered == "CL") {
@@ -76,32 +70,19 @@ class memlist extends NoInputPage {
 		$memberID = $entered;
 		$db_a = pDataConnect();
 
-		$query = "select CardNo,personNum,LastName,FirstName,CashBack,Balance,Discount,
-			MemDiscountLimit,ChargeOk,WriteChecks,StoreCoupons,Type,memType,staff,
-			SSI,Purchases,NumberOfChecks,memCoupons,blueLine,Shown,id from custdata 
-			where CardNo = '".$entered."' order by personNum";
-		if (!is_numeric($entered)) {
-			$query = "select CardNo,personNum,LastName,FirstName from custdata 
-				where LastName like '".$entered."%' order by LastName, FirstName";
-		}
+                $query = "select CardNo, balance as Balance, discount as Discount from accounts 
+                          where name LIKE '".$entered."'order by name";
 
 		$result = $db_a->query($query);
 		$num_rows = $db_a->num_rows($result);
 
-		// if there's on result and either
-		// a. it's the default nonmember account or
-		// b. it's been confirmed in the select box
+		// if there's one result and either
 		// then set the member number
-		if (($num_rows == 1 && $entered == $IS4C_LOCAL->get("defaultNonMem"))
-			||
-		    (is_numeric($entered) && is_numeric($personNum) && $selected_name) ){
+		if ($num_rows == 1) {
 			$row = $db_a->fetch_array($result);
 			setMember($row["CardNo"], $personNum,$row);
 			$IS4C_LOCAL->set("scan","scan");
-			if ($entered != $IS4C_LOCAL->get("defaultNonMem") && check_unpaid_ar($row["CardNo"]))
-				header("Location: {$IS4C_PATH}gui-modules/UnpaidAR.php");
-			else
-				header("Location: {$IS4C_PATH}gui-modules/pos2.php");
+			header("Location: {$IS4C_PATH}gui-modules/pos2.php");
 			return False;
 		}
 
@@ -174,11 +155,13 @@ class memlist extends NoInputPage {
 				."onblur=\"\$('#search').focus()\" id=\"search\">";
 
 			$selectFlag = 0;
+                        /* don't  know what this is --kclair
 			if (!is_numeric($entered) && $IS4C_LOCAL->get("memlistNonMember") == 1) {
 				echo "<option value='3::1' selected> 3 "
 					."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Customer";
 				$selectFlag = 1;
 			}
+                        */
 
 			for ($i = 0; $i < $num_rows; $i++) {
 				$row = $db->fetch_array($result);
@@ -187,8 +170,8 @@ class memlist extends NoInputPage {
 				} else {
 					$selected = "";
 				}
-				echo "<option value='".$row["CardNo"]."::".$row["personNum"]."' ".$selected.">"
-					.$row["CardNo"]." ".$row["LastName"].", ".$row["FirstName"]."\n";
+				echo "<option value='".$row["name"]."' ".$selected.">"
+					.$row["name"]."</option>\n";
 			}
 			echo "</select></div>"
 				."<div class=\"listboxText centerOffset\">"
