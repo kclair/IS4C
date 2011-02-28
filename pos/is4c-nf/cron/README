@@ -1,0 +1,2 @@
+these scripts are run as standalone php scripts from cron. 
+right now they need to be edited by hand with the db connection info.
