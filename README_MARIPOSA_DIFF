@@ -1,0 +1,5 @@
+Where the Mariposa branch of IS4C has diverged from the 'gohanman' branch:
+
+* departments and subdepartments in sample data were changed
+* fannie code to update UNFI prices was changed to use the Custom SRP
+* added new table 'accounts' to hold unique accounts, their names, and balances
