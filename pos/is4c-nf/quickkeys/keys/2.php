@@ -11,6 +11,7 @@ $my_keys = array(
 	new quickkey("Credit\nCard","CC"),
 	new quickkey("EBT FS","EF"),
 	new quickkey("EBT Cash","EF"),
+        new quickkey("Member Balance", "MB"),
 	new quickkey("Store\nCharge","MI"),
 	new quickkey("Gift Card","GD"),
 	new quickkey("Coupon","CP"),

@@ -281,10 +281,13 @@ function tender($right, $strl) {
 	       $ret['output'] =	xboxMsg("WIC tender not applicable");
 	       return $ret;
 	}
-	elseif ($right == "CK" && $IS4C_LOCAL->get("ttlflag") == 1 && ($IS4C_LOCAL->get("isMember") != 0 || $IS4C_LOCAL->get("isStaff") != 0) && (($strl/100 - $IS4C_LOCAL->get("amtdue") - 0.005) > $IS4C_LOCAL->get("dollarOver")) && ($IS4C_LOCAL->get("cashOverLimit") == 1)){
-		$ret['output'] = boxMsg("member or staff check tender cannot 
-			exceed total purchase by over $".$IS4C_LOCAL->get("dollarOver"));
-		return $ret;
+	#elseif ($right == "CK" && $IS4C_LOCAL->get("ttlflag") == 1 && ($IS4C_LOCAL->get("isMember") != 0 || $IS4C_LOCAL->get("isStaff") != 0) && (($strl/100 - $IS4C_LOCAL->get("amtdue") - 0.005) > $IS4C_LOCAL->get("dollarOver")) && ($IS4C_LOCAL->get("cashOverLimit") == 1)){
+	#	$ret['output'] = boxMsg("member or staff check tender cannot 
+	#		exceed total purchase by over $".$IS4C_LOCAL->get("dollarOver"));
+	#	return $ret;
+	elseif ($right == "CK" && ($IS4C_LOCAL->get("isMember") == 0)){
+          	$ret['output'] = xboxMsg('Non-members cannot pay by check.');
+                return $ret;
 	}
 	elseif ((($right == "CC" || $right == "TB" || $right == "GD") && $strl/100 > ($IS4C_LOCAL->get("amtdue") + 0.005)) && $IS4C_LOCAL->get("amtdue") >= 0){ 
 		$ret['output'] = xboxMsg("tender cannot exceed purchase amount");
@@ -294,13 +297,18 @@ function tender($right, $strl) {
 		$ret['output'] = xboxMsg("no cash back with EBT cash tender");
 		return $ret;
 	}
-	elseif($right == "CK" && $IS4C_LOCAL->get("ttlflag") == 1 && $IS4C_LOCAL->get("isMember") == 0 and $IS4C_LOCAL->get("isStaff") == 0 && ($strl/100 - $IS4C_LOCAL->get("amtdue") - 0.005) > 5){ 
-		$ret['output'] = xboxMsg("non-member check tender cannot exceed total purchase by over $5.00");
-		return $ret;
-	}
+        elseif($right == "MB" && ($IS4C_LOCAL->get("isMember") == 0)) {
+    		$ret['output'] = xboxMsg("Non-members cannot pay by member balance");
+           	return $ret;
+        }
+	#elseif($right == "CK" && $IS4C_LOCAL->get("ttlflag") == 1 && $IS4C_LOCAL->get("isMember") == 0 and $IS4C_LOCAL->get("isStaff") == 0 && ($strl/100 - $IS4C_LOCAL->get("amtdue") - 0.005) > 5){ 
+	#	$ret['output'] = xboxMsg("non-member check tender cannot exceed total purchase by over $5.00");
+	#	return $ret;
+	#}
 
 	getsubtotals();
 
+        /*
 	if ($IS4C_LOCAL->get("ttlflag") == 1 && ($right == "CX" || $right == "MI")) {			// added ttlflag on 2/28/05 apbw 
 
 		$charge_ok = chargeOk();
@@ -308,6 +316,7 @@ function tender($right, $strl) {
 		elseif ($right == "MI" && $charge_ok == 1) $charge_ok = 1;
 		else $charge_ok = 0;
 	}
+        */
 
 	/* when processing as strings, weird things happen
 	 * in excess of 1000, so use floating point */
@@ -338,11 +347,12 @@ function tender($right, $strl) {
 		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR>is not authorized<BR>to make corporate charges");
 		return $ret;
 	}
-	//alert customer that charge exceeds avail balance
-	elseif ($right == "MI" && $charge_ok == 0 && $IS4C_LOCAL->get("availBal") < 0) {
-		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR> has $" . $IS4C_LOCAL->get("availBal") . " available.");
+	//alert customer that charge + current balance exceeds avail balance
+	elseif ($right == "MB" && (($IS4C_LOCAL->get("availBal") + $strl) > $IS4C_LOCAL->get("MaxBalance"))) {
+		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR> has $" . $IS4C_LOCAL->get("availBal") . " available and will be over balance after this transaction.");
 		return $ret;
 	}
+        /*
 	elseif ($right == "MI" && $charge_ok == 1 && $IS4C_LOCAL->get("availBal") < 0) {
 		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR>is overlimit");
 		return $ret;
@@ -365,6 +375,7 @@ function tender($right, $strl) {
 		$ret['output'] = xboxMsg("charge tender exceeds purchase amount");
 		return $ret;
 	}
+        */
 
 	$db = pDataConnect();
 	$query = "select TenderID,TenderCode,TenderName,TenderType,
@@ -422,6 +433,7 @@ function tender($right, $strl) {
 	$ref = trim($IS4C_LOCAL->get("CashierNo"))."-"
 		.trim($IS4C_LOCAL->get("laneno"))."-"
 		.trim($IS4C_LOCAL->get("transno"));
+        /* uncomment to endorse checks
 	if ($right == "CK" && $IS4C_LOCAL->get("msgrepeat") == 0) {
 		$msg = "<BR>insert check</B><BR>press [enter] to endorse<P><FONT size='-1'>[clear] to cancel</FONT>";
 		if ($IS4C_LOCAL->get("LastEquityReference") == $ref){
@@ -435,7 +447,8 @@ function tender($right, $strl) {
 		$ret['main_frame'] = '/gui-modules/boxMsg2.php';
 		return $ret;
 	}
-	elseif ($right == "TV" && $IS4C_LOCAL->get("msgrepeat") == 0) {
+        */
+	if ($right == "TV" && $IS4C_LOCAL->get("msgrepeat") == 0) {
 		$msg = "<BR>insert travelers check</B><BR>press [enter] to endorse<P><FONT size='-1'>[clear] to cancel</FONT>";
 		if ($IS4C_LOCAL->get("LastEquityReference") == $ref){
 			$msg .= "<div style=\"background:#993300;color:#ffffff;
@@ -478,7 +491,7 @@ function tender($right, $strl) {
 	$IS4C_LOCAL->set("msgrepeat",0);
 	$IS4C_LOCAL->set("TenderType",$tender_code);			/***added by apbw 2/1/05 SCR ***/
 
-	if ($IS4C_LOCAL->get("TenderType") == "MI" || $IS4C_LOCAL->get("TenderType") == "CX") { 	// apbw 2/28/05 SCR
+	if ($IS4C_LOCAL->get("TenderType") == "MB") { // || $IS4C_LOCAL->get("TenderType") == "CX") { 	// apbw 2/28/05 SCR
 		$IS4C_LOCAL->set("chargetender",1);							// apbw 2/28/05 SCR
 	}													// apbw 2/28/05 SCR
 
@@ -503,7 +516,7 @@ function tender($right, $strl) {
 		getsubtotals();
 	}
 
-	if ($IS4C_LOCAL->get("amtdue") <= 0.005) {
+	if (($IS4C_LOCAL->get("amtdue") <= 0.005) || ($IS4C_LOCAL->get("TenderType") == "MB")) {
 		if ($IS4C_LOCAL->get("paycard_mode") == PAYCARD_MODE_AUTH
 		    && ($right == "CC" || $right == "GD")){
 			$IS4C_LOCAL->set("change",0);
