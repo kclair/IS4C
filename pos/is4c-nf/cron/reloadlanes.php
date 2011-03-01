@@ -4,15 +4,9 @@
    --kclair 02/11/2011
 */
 
-// sync custdata and accounts often, others less often
-$now  = localtime(time(), true);
-if ($now['tm_mday'] == 1 && $now['tm_hour'] == 0 && $now['tm_min'] < 5) {
-  // this one should run on the first day of every month during the first cron job
-  // if cron is running this script at any other than 5m then the last conditional likely should change
-  $tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
-}else {
-  $tables = array('custdata', 'accounts');
-}
+//$tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
+// i think we really only need custdata and accounts synced automatically
+$tables = array('custdata', 'accounts');
 
 foreach ($tables as $t) {
   synctable($t);
@@ -21,13 +15,13 @@ foreach ($tables as $t) {
 function synctable($table) {
     $table = strtolower($table);
 
-    $server = "192.168.1.7";
-    $serveruser = "is4clane";
-    $serverpass = "XXX";
+    $server = "192.168.1.109";
+    $serveruser = "root";
+    $serverpass = "is4c";
 
     $laneserver = "localhost";
-    $laneuser = "is4clane";
-    $lanepass = "XXX";
+    $laneuser = "root";
+    $lanepass = "is4c";
 
     $outfile = "/home/k/IS4C/pos/is4c/download/" . $table . ".sql";
     $mysqldump = "mysqldump -u $serveruser --password=$serverpass -h $server ";
