@@ -266,6 +266,7 @@ function checkstatus($num) {
 function tender($right, $strl) {
 	global $IS4C_LOCAL;
 	$tender_upc = "";
+        $IS4C_LOCAL->set("addToBal", 0);
 
 	$ret = array('main_frame'=>false,
 		'redraw_footer'=>false,
@@ -341,7 +342,11 @@ function tender($right, $strl) {
 	$strl *= $mult;
 
 	if ($IS4C_LOCAL->get("ttlflag") == 0) {
-		$ret['output'] = boxMsg("Member or Non-member ID must be entered before tender can be accepted");
+ 		if (!$IS4C_LOCAL->get("memberID")) {
+			$ret['output'] = boxMsg("Member or Non-member ID must be entered before tender can be accepted");
+		}else {
+			$ret['output'] = boxMsg("Transaction must be totaled before tender can be accepted.");
+		}
 		return $ret;
 	}
         elseif (!($right=="CA") && ($strl > $IS4C_LOCAL->get("amtdue")) && ($IS4C_LOCAL->get("isMember") == 0)) {
@@ -399,7 +404,7 @@ function tender($right, $strl) {
 	$db = pDataConnect();
 	$query = "select TenderID,TenderCode,TenderName,TenderType,
 		ChangeMessage,MinAmount,MaxAmount,MaxRefund from 
-		tenders where tendercode = '".$right."'";
+		tenders where TenderCode = '".$right."'";
 	$result = $db->query($query);
 
 	$num_rows = $db->num_rows($result);
