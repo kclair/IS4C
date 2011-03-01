@@ -578,7 +578,8 @@ function create_op_dbs($db,$type){
 	$subQ = "CREATE TABLE subdepts (
 		subdept_no smallint,
 		subdept_name varchar(30),
-		dept_ID smallint)";
+		dept_ID smallint,
+		subdept_fs smallint)";
 	if(!$db->table_exists('subdepts',$name)){
 		$db->query($subQ,$name);
 	}
