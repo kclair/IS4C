@@ -4,7 +4,12 @@ require 'mysql'
 require 'yaml'
 
 file = File.new('./unfi.txt', 'r')
-unfi_cats = YAML.load_file('./unfi_categories.yml')
+begin
+  unfi_cats = YAML.load_file('./unfi_categories.yml')
+rescue
+  puts 'could not load yaml file:'+$!
+  exit
+end
 desccol = 2
 packcol = 3
 sizecol = 4
@@ -14,7 +19,7 @@ srpcol = 10
 catcol = 6
 
 begin
-  dbh = Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata")
+  dbh = Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata_new")
   dbh.query("TRUNCATE table products")
 rescue Mysql::Error => e
   puts "Error code: #{e.errno}"
@@ -32,14 +37,20 @@ while (line = file.gets)
   upc = row[upccol]
   cost = row[costcol]
   srp = row[srpcol].sub!(/^0+/, '').sub!(/(\d\d)$/, '.\1') || 0
-  cat = row[catcol]
-  dept = unfi_cats[cat]['dept']
-  subdept = unfi_cats[cat]['subdept'] || ''
-  fs = unfi_cats[cat]['nofs'] ? 0 : 1
+  cat = row[catcol].to_i
+  if cat and unfi_cats.has_key?(:cat)
+    dept = unfi_cats[cat]['dept']
+    subdept = unfi_cats[cat]['subdept'] || ''
+    fs = unfi_cats[cat]['nofs'] ? 0 : 1
+  else
+    dept = 0
+    subdept = 0
+    fs = 1 
+  end
   begin
     realcost = cost.to_f / pack.to_f
-    dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata")
-    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs})"
+    dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata_new")
+    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, inUse, discount) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, 1, 1)"
     dbh.query(query)   
   rescue Mysql::Error => e
      puts "Query: #{query}"
