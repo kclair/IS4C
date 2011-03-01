@@ -1,0 +1,298 @@
+24: # carbonated juice / soda
+  dept: 1
+  subdept: 105
+47: #coffee substitutes / misc mixes
+  dept: 1
+  subdept: 105
+20: # juices/nectars/concentrates
+  dept: 1
+  subdept: 105
+25: # non-dairy / aseptic milk
+  dept: 1
+  subdept: 105
+46: # tea bags loose / ready to drink
+  dept: 1
+  subdept: 105
+22: # beverage, waters
+  dept: 1
+  subdept: 105
+7: # bulk coated confections
+  dept: 4
+3: #bulk coffee / tea
+  dept: 4
+6: # bulk dried fruit
+  dept: 4
+8: # bulk flours, sweeteners, baking supplies
+  dept: 4
+1: # bulk food service, misc deli
+  dept: 4
+2: # bulk grains and beans
+  dept: 4
+  subdept: 117
+9: # bulk herbs and spices
+  dept: 13
+  subdept: 129
+4: # nuts and seed
+  dept: 4
+20: # bulk pasta
+  dept: 4
+5: # bulk snacks, trail mix, cereals
+  dept: 4
+97: # perishable beverages
+  dept: 2
+93: # cheese and substitutes
+  dept: 9
+95: # soy foods, seitan
+  dept: 2
+94: # yoghurts, cultures
+  dept: 2
+98: #perishable, misc
+  dept: 2
+64: # frozen baked goods, breakfast foods
+  dept: 3
+  subdept: 112
+62: # frozen yoghurts, desserts, novelties
+  dept: 3
+  subdept: 112
+61: # frozen entrees, pizza
+  dept: 3
+  subdept: 112
+77: # frozen fruits, veggies
+  dept: 3
+  subdept: 112
+66: # frozen juice, bev
+  dept: 3
+  subdept: 112
+63: # frozen meat, etc
+  dept: 3
+  subdept: 116
+86: # merchandising aids
+  dept: 14
+  subdept: 132
+  nofs: 1
+17: # candles
+  dept: 14
+  nofs: 1
+13: # household cleaning supplies
+  dept: 1
+  subdept: 104
+  nofs: 1
+75: # misc boxes, labels, internal supplies
+  dept: 14
+  nofs: 1
+79: # misc non-foodds
+  dept: 14
+  nofs: 1
+12: # paper goods, wipes
+  dept: 1
+  subdept: 104
+  nofs: 1
+90: # pet food and care
+  dept: 1
+  subdept: 103
+91: # clothing
+  dept: 14
+  subdept: 132
+  nofs: 1
+58: # bath and show preparations
+  dept: 13
+  subdept: 125
+  nofs: 1
+83: # cosmetics
+  dept: 13
+  subdept: 125
+  nofs: 1
+57: # deoderants
+  dept: 13
+  subdept: 125
+  nofs: 1
+56: # facial care
+  dept: 13
+  subdept: 125
+  nofs: 1
+80: # hair care
+  dept: 13
+  subdept: 125
+  nofs: 1
+81: # lotion, hand and body
+  dept: 13
+  subdept: 125
+  nofs: 1
+23: # oils, body massage
+  dept: 13
+  subdept: 125
+  nofs: 1
+59: # ointments and med creams
+  dept: 13
+  subdept: 125
+  nofs: 1
+71: # oral hygeine
+  dept: 13
+  subdept: 125
+  nofs: 1
+87: # personal care accessories
+  dept: 13
+  subdept: 125
+  nofs: 1
+82: # soaps, body
+  dept: 13
+  subdept: 125
+  nofs: 1
+69: # sun care
+  dept: 13
+  subdept: 125
+  nofs: 1
+14: #feminine hygeine
+  dept: 13
+  subdept: 125
+  nofs: 1
+84: # amino acids
+  dept: 13
+  subdept: 126
+15: # bars, nutritional
+  dept: 1
+  subdept: 101
+21: # beverage, suppplements
+  dept: 13
+  subdept: 126
+49: # diet formulas
+  dept: 13
+  subdept: 126
+36: # fiber, digestional cleansers
+  dept: 13
+  subdept: 126
+39: # food supplements
+  dept: 13
+  subdept: 126
+48: # herbal formulas
+  dept: 13
+  subdept: 129
+71: # herbs, single
+  dept: 13
+  subdept: 129
+52: # homeopathic
+  dept: 13
+  subdept: 128
+41: # mineral, complexes
+  dept: 13
+  subdept: 126
+42: # multivitamins
+  dept: 13
+  subdept: 126
+51: # oily fish, epa
+  dept: 13
+  subdept: 126
+43: # supplement, specialty
+  dept: 13
+  subdept: 126
+85: # sports supplements
+  dept: 13
+  subdept: 126
+31: # vitaamin a, d, beta cerotene
+  dept: 13
+  subdept: 126
+32: # vitamins b and b complex
+  dept: 13
+  subdept: 126
+33: # vitamin c and c complex
+  dept: 13
+  subdept: 126
+37: # vitamin e
+  dept: 13
+  subdept: 126
+26: # baby food
+  dept: 1
+96: # baked goods, non-perishable
+  dept: 1
+  subdept: 101
+89: # baaking mixes, flours
+  dept: 1
+  subdept: 101
+18: # bars cereal, snack, granola
+  dept: 1
+  subdept: 101
+29: # packaged beans, dried fruit
+  dept: 1
+  subdept: 101
+60: # candy bars, gum, cough drops
+  dept: 1
+  subdept: 101
+55: # canned
+  dept: 1
+  subdept: 102
+27: # cereal, hot
+  dept: 1
+  subdept: 101
+28: # cereal, packaged
+  dept: 1
+  subdept: 101
+65: # chips and pretzels
+  dept: 1
+  subdept: 101
+72: # condiments
+  dept: 1
+  subdept: 101
+30: #cookies
+  dept: 1
+  subdept: 101
+34: # crackers
+  dept: 1
+  subdept: 101
+67: # desserts (non-frozen)
+  dept: 1
+  subdept: 101
+88: # entrees, main dishes
+  dept: 1
+  subdept: 101
+92: # macrobiotic foods, tofu (aseptic), japanese
+  dept: 1
+  subdept: 101
+38: # frut, nut spreads
+  dept: 1
+  subdept: 101
+44: # food oils
+  dept: 1
+  subdept: 101
+76: # pasta sauces
+  dept: 1
+  subdept: 101
+11: # pasta, packaged
+  dept: 1
+  subdept: 101
+78: # pickles, olives, saurkraut
+  dept: 1
+  subdept: 101
+35: # rice cakes
+  dept: 1
+  subdept: 101
+70: # salad dressing
+  dept: 1
+  subdept: 101
+73: # salsa  and dips
+  dept: 1
+  subdept: 101
+99: # sea vegetables
+  dept: 1
+  subdept: 101
+50: # seasonings
+  dept: 1
+  subdept: 101
+19: # specialty misc
+  dept: 1
+  subdept: 101
+54: # mixes, buillion, ramen
+  dept: 1
+  subdept: 101
+53: # soup broth chili (can and jar)
+  dept: 101
+40: # fruit sauces, canned
+  dept: 1
+  subdept: 102
+16: # sweeteners packaged and syrups
+  dept: 1
+  subdept: 101
+74: # tamaris, gravys, sauces
+  dept: 1
+  subdept: 101
+68: # tomatos canned and tom products
+  dept: 1
