@@ -681,7 +681,7 @@ function create_trans_dbs($con){
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'valutecRequestMod','trans');
 
-        /* trigger to update balance on transactions */
+        /* trigger to update balance on transactions 
         $balTrig = "CREATE TRIGGER `update_balance` AFTER INSERT ON `dtransactions` 
                     FOR EACH ROW 
                     UPDATE is4c_op.accounts SET balance=(is4c_op.accounts.balance + NEW.total) 
@@ -689,6 +689,7 @@ function create_trans_dbs($con){
         if (!$con->trigger_exists('update_balance', $FANIE_TRANS_DB)) {
           $con->query($balTrig, $FANNIE_TRANS_DB);
         }
+ 	*/
 
 	/* invoice stuff is very beta; not documented yet */
 	$invCur = "CREATE TABLE InvDelivery (
