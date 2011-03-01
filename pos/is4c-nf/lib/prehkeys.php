@@ -43,7 +43,7 @@ function clearMember(){
 function memberID($member_number) {
 	global $IS4C_LOCAL,$IS4C_PATH;
 	$query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
-                accounts.balance as Balance,accounts.discount as Discount,
+                accounts.balance as Balance,accounts.discount as Discount, accounts.name, accounts.max_balance, 
 		custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
 		custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
                 from custdata, accounts
@@ -115,6 +115,9 @@ function setMember($member, $personNumber, $row) {
 	$IS4C_LOCAL->set("Type",$row["Type"]);
 	$IS4C_LOCAL->set("percentDiscount",$row["Discount"]);
         $IS4C_LOCAL->set("Balance", $row["Balance"]);
+        $IS4C_LOCAL->set("MaxBalance", $row["max_balance"]);
+        $IS4C_LOCAL->set("availCred", $row["max_balance"] - $row["Balance"]);
+        $IS4C_LOCAL->set("accountName", $row["name"]);
 
 	$IS4C_LOCAL->set('inactMem',0);
 	if ($IS4C_LOCAL->get("Type") == "PC") {
@@ -289,10 +292,12 @@ function tender($right, $strl) {
           	$ret['output'] = xboxMsg('Non-members cannot pay by check.');
                 return $ret;
 	}
+        /* we're going to make a more generalized catch for this one,  below 
 	elseif ((($right == "CC" || $right == "TB" || $right == "GD") && $strl/100 > ($IS4C_LOCAL->get("amtdue") + 0.005)) && $IS4C_LOCAL->get("amtdue") >= 0){ 
 		$ret['output'] = xboxMsg("tender cannot exceed purchase amount");
 		return $ret;
 	}
+        */
 	elseif($right == "EC" && $strl/100 > $IS4C_LOCAL->get("amtdue")){
 		$ret['output'] = xboxMsg("no cash back with EBT cash tender");
 		return $ret;
@@ -300,6 +305,10 @@ function tender($right, $strl) {
         elseif($right == "MB" && ($IS4C_LOCAL->get("isMember") == 0)) {
     		$ret['output'] = xboxMsg("Non-members cannot pay by member balance");
            	return $ret;
+        }
+        elseif($right == "CB" && ($IS4C_LOCAL->get("isMember") == 0)) {
+                $ret['output'] = xboxMsg("Non-members cannot pay by cash-to-balance");
+                return $ret;
         }
 	#elseif($right == "CK" && $IS4C_LOCAL->get("ttlflag") == 1 && $IS4C_LOCAL->get("isMember") == 0 and $IS4C_LOCAL->get("isStaff") == 0 && ($strl/100 - $IS4C_LOCAL->get("amtdue") - 0.005) > 5){ 
 	#	$ret['output'] = xboxMsg("non-member check tender cannot exceed total purchase by over $5.00");
@@ -335,6 +344,10 @@ function tender($right, $strl) {
 		$ret['output'] = boxMsg("transaction must be totaled before tender can be accepted");
 		return $ret;
 	}
+        elseif (!($right=="CA") && ($strl > $IS4C_LOCAL->get("amtdue")) && ($IS4C_LOCAL->get("isMember") == 0)) {
+                $ret['output'] = xboxMsg("Non-members cannot pay more than the current transaction");
+                return $ret;
+        }
 	elseif (($right == "FS" || $right == "EF") && $IS4C_LOCAL->get("fntlflag") == 0) {
 		$ret['output'] = boxMsg("eligble amount must be totaled before foodstamp tender can be accepted");
 		return $ret;
@@ -343,16 +356,22 @@ function tender($right, $strl) {
 		$ret['output'] = xboxMsg("Foodstamp tender cannot exceed elible amount by pver $10.00");
 		return $ret;
 	}
+        /*
 	elseif ($right == "CX" && $charge_ok == 0) {
 		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR>is not authorized<BR>to make corporate charges");
 		return $ret;
 	}
-	//alert customer that charge + current balance exceeds avail balance
-	elseif ($right == "MB" && (($IS4C_LOCAL->get("availBal") + $strl) > $IS4C_LOCAL->get("MaxBalance"))) {
-		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR> has $" . $IS4C_LOCAL->get("availBal") . " available and will be over balance after this transaction.");
+        */
+	//alert customer that charge + current balance exceeds avail credit 
+        elseif ($right == "MB" && ($strl > 0)) {
+		$ret['output'] = xboxMsg("Payment with Member Balance cannot take an amount");
+                return $ret;
+	}
+	elseif ($right == "MB" && ($IS4C_LOCAL->get("availCred") < $IS4C_LOCAL->get("amtdue"))) {
+		$ret['output'] = xboxMsg("account ".$IS4C_LOCAL->get("accountName")."<BR> has $" . $IS4C_LOCAL->get("availCred") . " available and will be over their balance limit after this transaction.");
 		return $ret;
 	}
-        /*
+        /* 
 	elseif ($right == "MI" && $charge_ok == 1 && $IS4C_LOCAL->get("availBal") < 0) {
 		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR>is overlimit");
 		return $ret;
@@ -424,7 +443,12 @@ function tender($right, $strl) {
 	}
 
 	if ($strl - $IS4C_LOCAL->get("amtdue") > 0) {
-		$IS4C_LOCAL->set("change",$strl - $IS4C_LOCAL->get("amtdue"));
+		if ($right=="CA") {
+			$IS4C_LOCAL->set("change",$strl - $IS4C_LOCAL->get("amtdue"));
+		}else {
+			$IS4C_LOCAL->set("change",0);
+			$IS4C_LOCAL->set("carryToBal", $strl - $IS4C_LOCAL->get("amtdue"));
+		}
 	}
 	else {
 		$IS4C_LOCAL->set("change",0);
@@ -516,7 +540,7 @@ function tender($right, $strl) {
 		getsubtotals();
 	}
 
-	if (($IS4C_LOCAL->get("amtdue") <= 0.005) || ($IS4C_LOCAL->get("TenderType") == "MB")) {
+	if ($IS4C_LOCAL->get("amtdue") <= 0.005){
 		if ($IS4C_LOCAL->get("paycard_mode") == PAYCARD_MODE_AUTH
 		    && ($right == "CC" || $right == "GD")){
 			$IS4C_LOCAL->set("change",0);
@@ -529,12 +553,17 @@ function tender($right, $strl) {
 			return $ret;
 		}
 
-		$IS4C_LOCAL->set("change",-1 * $IS4C_LOCAL->get("amtdue"));
-		$cash_return = $IS4C_LOCAL->get("change");
 
-		if ($right != "FS") {
+		if ($right == "CA") {
+			$IS4C_LOCAL->set("change",-1 * $IS4C_LOCAL->get("amtdue"));
+			$cash_return = $IS4C_LOCAL->get("change");
 			addchange($cash_return);
-		}
+		}else {
+			// do something here to add to balance... do nothing?
+			// if the payments are getting added to dtransactions as negative then 
+			// this should do the right thing with the balance
+			// up above, $tendered is being multiplied by -1 so that looks ok...
+ 		}
 
 		if ($right == "CK" && $cash_return > 0) 
 			$IS4C_LOCAL->set("cashOverAmt",1); // apbw/cvr 3/5/05 cash back beep

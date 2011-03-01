@@ -18,3 +18,4 @@
 (18,'MA','MAD Coupon','CA','',0.01,2.5,0)
 (19,'RR','RRR Coupon','CA','',0.01,1,0)
 (20,'MB','Member Balance','','',0,999,999)
+(21,'CB','Cash to Balance','','',0,500,500)
