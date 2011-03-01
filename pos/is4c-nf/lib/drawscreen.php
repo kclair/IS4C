@@ -95,6 +95,9 @@ function printfooter($readOnly=False) {
 			$ret .= "<td class=\"due\">Amount Due</td>";
 		}
 	}
+	elseif ($IS4C_LOCAL->get("ttlflag") == 1 and $IS4C_LOCAL->get("End") == 1 and $IS4C_LOCAL->get("addToBal")) {
+		$ret .= "<td class=\"change\">Added to Balance</td>";
+ 	}
 	elseif ($IS4C_LOCAL->get("ttlflag") == 1  and $IS4C_LOCAL->get("End") == 1 ) {
 		$ret .= "<td class=\"change\">Change</td>";
 	}	
@@ -259,7 +262,7 @@ function printheaderb() {
 			$strmemberID = str_replace("(0)", "(n/a)", $strmemberID);
                         $balance = '';
 		}else {
-                  $balance = "<br><span class=\"bigger\">B A L A N C E: ".number_format($IS4C_LOCAL->get("Balance"),2)."</span>";
+                  $balance = "<br><span class=\"bigger\">B A L A N C E: ".number_format((double)$IS4C_LOCAL->get("Balance"),2)."</span>";
                 }
 	}
 

@@ -341,7 +341,7 @@ function tender($right, $strl) {
 	$strl *= $mult;
 
 	if ($IS4C_LOCAL->get("ttlflag") == 0) {
-		$ret['output'] = boxMsg("transaction must be totaled before tender can be accepted");
+		$ret['output'] = boxMsg("Member or Non-member ID must be entered before tender can be accepted");
 		return $ret;
 	}
         elseif (!($right=="CA") && ($strl > $IS4C_LOCAL->get("amtdue")) && ($IS4C_LOCAL->get("isMember") == 0)) {
@@ -443,12 +443,7 @@ function tender($right, $strl) {
 	}
 
 	if ($strl - $IS4C_LOCAL->get("amtdue") > 0) {
-		if ($right=="CA") {
-			$IS4C_LOCAL->set("change",$strl - $IS4C_LOCAL->get("amtdue"));
-		}else {
-			$IS4C_LOCAL->set("change",0);
-			$IS4C_LOCAL->set("carryToBal", $strl - $IS4C_LOCAL->get("amtdue"));
-		}
+		$IS4C_LOCAL->set("change",$strl - $IS4C_LOCAL->get("amtdue"));
 	}
 	else {
 		$IS4C_LOCAL->set("change",0);
@@ -540,7 +535,7 @@ function tender($right, $strl) {
 		getsubtotals();
 	}
 
-	if ($IS4C_LOCAL->get("amtdue") <= 0.005){
+	if ($IS4C_LOCAL->get("amtdue") <= 0.005 || $IS4C_LOCAL->get("isMember") == 1){
 		if ($IS4C_LOCAL->get("paycard_mode") == PAYCARD_MODE_AUTH
 		    && ($right == "CC" || $right == "GD")){
 			$IS4C_LOCAL->set("change",0);
@@ -553,17 +548,15 @@ function tender($right, $strl) {
 			return $ret;
 		}
 
-
-		if ($right == "CA") {
-			$IS4C_LOCAL->set("change",-1 * $IS4C_LOCAL->get("amtdue"));
-			$cash_return = $IS4C_LOCAL->get("change");
+		// cash_return might really be no cash being returning, but maybe that is set in addchange() 
+		$IS4C_LOCAL->set("change",-1 * $IS4C_LOCAL->get("amtdue"));
+		$cash_return = $IS4C_LOCAL->get("change");
+		if ($right == 'CA') {
 			addchange($cash_return);
 		}else {
-			// do something here to add to balance... do nothing?
-			// if the payments are getting added to dtransactions as negative then 
-			// this should do the right thing with the balance
-			// up above, $tendered is being multiplied by -1 so that looks ok...
- 		}
+			$IS4C_LOCAL->set("addToBal", $cash_return);
+			//addtobal($cash_return);
+		}
 
 		if ($right == "CK" && $cash_return > 0) 
 			$IS4C_LOCAL->set("cashOverAmt",1); // apbw/cvr 3/5/05 cash back beep
