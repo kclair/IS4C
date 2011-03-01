@@ -3,10 +3,12 @@ Where the Mariposa branch of IS4C has diverged from the 'gohanman' branch:
 fannie:
 * departments and subdepartments in sample data were changed
 * fannie code to update UNFI prices was changed to use the Custom SRP
-* added new table 'accounts' to hold unique accounts, their names, and balances
+* added new table 'accounts' to hold unique accounts, their names, balances, discounts, and max balances
 * mysql trigger used on insert into dtransactions to update accounts balance
 * added MESS/ directory and php script which takes transactions from MESS over http 
 
 is4c-nf:
-* added cron directory and script to sync custdata and accounts to lanes
+* added cron directory and script to sync custdata and accounts to the lane itself
 * changed member search to search the name field in the accounts table rather than CardNo or first/last name
+* add 'MB' tender type which basically allows for no payment if the account balance can accomodate it
+* add 'CB' tender type which is almost the same as CA except that it does not give any change, allowing the remainder to float to the account balance

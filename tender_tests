@@ -1,0 +1,5 @@
+* only members can pay by check
+* only members can pay by member balance
+* only members can pay more than the total
+* payment with member balance cannot take an amount
+* only members can pay with "CB" (Cash Balance) which does not dispense change
