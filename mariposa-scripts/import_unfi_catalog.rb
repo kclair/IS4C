@@ -10,6 +10,7 @@ sizecol = 4
 upccol = 5
 costcol = 7
 srpcol = 10
+brandcol = 1
 
 products = {}
 while (line = all_products_file.gets)
@@ -27,6 +28,9 @@ while (line = all_products_file.gets)
   products[id]['size'] = row[sizecol]
   products[id]['upc'] = row[upccol]
   products[id]['cost'] = row[costcol]
+  brand = row[brandcol]
+  brand = brand.gsub(/"/, '\"') if brand
+  products[id]['brand'] = brand 
   if !products[id]['cost']
     puts 'no cost found for row '+row.inspect
     exit
@@ -39,6 +43,7 @@ all_products_file.close
 begin
   dbh = Mysql.real_connect("127.0.0.1", "root", "", "is4c_op")
   dbh.query("TRUNCATE table products")
+  dbh.query("TRUNCATE table prodExtra")
 rescue Mysql::Error => e
   puts "Error code: #{e.errno}"
   puts "Error message: #{e.error}"
@@ -79,10 +84,13 @@ while (line = mfc_products_file.gets)
   size = products[id]['size']
   cost = products[id]['cost']
   pack = products[id]['pack']
+  brand = products[id]['brand']
   begin
     realcost = cost.to_f / pack.to_f
     dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata")
-    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{cost}, 1, 1)"
+    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{realcost}, 1, 1)"
+    dbh.query(query)   
+    query = "INSERT INTO prodExtra (upc, distributor, manufacturer, cost, case_cost, case_quantity) values (#{upc}, 'UNFI', \"#{brand}\", #{realcost}, #{cost}, #{pack})"
     dbh.query(query)   
   rescue Mysql::Error => e
      puts "Query: #{query}"
