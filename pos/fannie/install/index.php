@@ -269,7 +269,7 @@ else {
 		echo "<span style=\"color:red;\">Failed</span>";
 	else {
 		echo "<span style=\"color:green;\">Succeeded</span>";
-		create_archive_dbs($sql);
+	//	create_archive_dbs($sql);
 	}
 }
 ?>
@@ -686,8 +686,8 @@ function create_trans_dbs($con){
                     FOR EACH ROW 
                     UPDATE is4c_op.accounts SET balance=(is4c_op.accounts.balance + NEW.total) 
                     WHERE is4c_op.accounts.CardNo = NEW.card_no ";
-        if (!$con->trigger_exists('update_balance', $FANIE_TRANS_DB)) {
-          $con->query($balTrig, $FANNIE_TRANS_DB);
+        if (!$con->trigger_exists('update_balance', $FANNIE_TRANS_DB)) {
+          //$con->query($balTrig, $FANNIE_TRANS_DB);
         }
  	*/
 
@@ -764,7 +764,7 @@ function create_trans_dbs($con){
 
 	$invSalesView = "CREATE VIEW InvSales AS
 		select datetime as inv_date,upc,quantity,total as price
-		FROM transArchive WHERE ".$con->monthdiff($con->now(),'datetime')." <= 1
+		FROM dtransactions WHERE ".$con->monthdiff($con->now(),'datetime')." <= 1
 		AND scale=0 AND trans_status NOT IN ('X','R') 
 		AND trans_type = 'I' AND trans_subtype <> '0'
 		AND register_no <> 99 AND emp_no <> 9999";
@@ -834,7 +834,7 @@ function create_trans_dbs($con){
 	if (!$con->table_exists("InvAdjustTotals",$FANNIE_TRANS_DB)){
 		$con->query($adjTotal,$FANNIE_TRANS_DB);
 	}
-
+/* VendorItems doesn't exist...
 	$inv = "CREATE VIEW Inventory AS
 		SELECT d.upc,
 		d.quantity AS OrderedQty,
@@ -857,6 +857,7 @@ function create_trans_dbs($con){
 	if (!$con->table_exists("Inventory",$FANNIE_TRANS_DB)){
 		$con->query($inv,$FANNIE_TRANS_DB);
 	}
+*/
 
 	$cache = "CREATE TABLE InvCache (
 		upc varchar(13),
@@ -928,15 +929,17 @@ function create_dlogs($con){
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'rp_receipt_header_90','trans');
 
-	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
-			'memIouToday','trans');
+/* mariposa is not using the AR system
+        create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
+                        'memIouToday','trans');
 
-	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
-			'newBalanceToday_cust','trans');
+        create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
+                        'newBalanceToday_cust','trans');
 
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'ar_history','trans');
 
+*/
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'stockpurchases','trans');
 

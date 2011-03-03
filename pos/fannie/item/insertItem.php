@@ -206,10 +206,10 @@ if (isset($_REQUEST['s_plu'])){
 		$scale_array['label'],($scale_array['graphics']==1)?121:0);
 }
 
-include('laneUpdates.php');
-updateProductAllLanes($upc);
+//include('laneUpdates.php');
+//updateProductAllLanes($upc);
 
-$prodQ = "SELECT * FROM products WHERE upc = ".$upc;
+$prodQ = "SELECT * FROM products WHERE upc = '".$upc."'";
 $prodR = $dbc->query($prodQ);
 $row = $dbc->fetch_array($prodR);
 
@@ -222,13 +222,13 @@ $row = $dbc->fetch_array($prodR);
         echo "</tr>";
         echo "<tr>";
        
-		$dept = $row["department"];
-        $query2 = "SELECT * FROM departments where dept_no = ".$row["department"];
+		$dept = $row["department"] ? $row['department'] : 0; 
+        $query2 = "SELECT * FROM departments where dept_no = ".$dept;
         $result2 = $dbc->query($query2);
 		$row2 = $dbc->fetch_array($result2);
 		
-		$subdept = $row["subdept"];
-		$query2a = "SELECT * FROM subdepts WHERE subdept_no = ".$row["subdept"];
+		$subdept = $row["subdept"] ? $row['subdept'] : 0;
+		$query2a = "SELECT * FROM subdepts WHERE subdept_no = ".$subdept;
 		$result2a = $dbc->query($query2a);
 		$row2a = $dbc->fetch_array($result2a);
 		
