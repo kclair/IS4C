@@ -113,7 +113,7 @@ if ($dbc->table_exists('prodExtra')){
 		$dbc->smart_insert('prodExtra',$arr);
 	}
 	else {
-		$dbc->smart_update('prodExtra',$arr,"WHERE upc='$upc'");
+		$dbc->smart_update('prodExtra',$arr,"upc='$upc'");
 	}
 }
 if ($dbc->table_exists("prodUpdate")){
@@ -184,8 +184,8 @@ if(isset($_REQUEST['s_plu'])){
 }
 
 /* push updates to the lanes */
-include('laneUpdates.php');
-updateProductAllLanes($upc);
+//include('laneUpdates.php');
+//updateProductAllLanes($upc);
 
 /* update the item's likecode if specified
    also update other items in the likecode
