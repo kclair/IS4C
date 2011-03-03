@@ -29,7 +29,7 @@ $CREATE['trans.newBalanceToday_cust'] = "
 		(case when a.charges is NULL then 0 ELSE a.charges END) as totcharges,
 		(CASE WHEN a.payments IS NULL THEN 0 ELSE a.payments END) as totpayments,
 		(CASE when a.card_no is NULL then c.Balance ELSE (c.Balance -a.charges - a.payments)END) as balance
-		FROM {$names['op']}.custdata as c left outer join memIouToday as a ON c.CardNo = a.card_no
+		FROM {$names['op']}.custdata as c left outer join {$names['trans']}.memIouToday as a ON c.CardNo = a.card_no
 		where c.personNum = 1
 ";
 

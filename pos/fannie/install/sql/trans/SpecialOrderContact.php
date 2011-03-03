@@ -23,5 +23,5 @@ simplicity. The order's order_id goes
 into card_no.
 */
 
-$CREATE['trans.SpecialOrderContact'] = duplicate_structure($dbms,'meminfo','SpecialOrderContact');
+$CREATE['trans.SpecialOrderContact'] = "CREATE TABLE `SpecialOrderContact` LIKE is4c_op.`meminfo`";
 ?>
