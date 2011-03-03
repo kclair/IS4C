@@ -72,6 +72,7 @@ function itemParse($upc){
     if($num == 0 || !$num){
         noItem();
 	$data = array();
+/* not using vendorItems
 	if (is_numeric($upc)){
 		$dataQ = "SELECT description,brand,cost/units as cost,vendorName,margin
 			FROM vendorItems AS i LEFT JOIN vendors AS v ON i.vendorID=v.vendorID
@@ -84,6 +85,7 @@ function itemParse($upc){
 				$data['srp'] = getSRP($data['cost'],$data['margin']);
 		}
 	}
+*/
         echo "<BODY onLoad='putFocus(0,1);'>";
         echo "<span style=\"color:red;\">Item not found.  You are creating a new one.  </span>";
 		if (@

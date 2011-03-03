@@ -189,7 +189,7 @@ if(isset($_REQUEST['s_plu'])){
 
 /* update the item's likecode if specified
    also update other items in the likecode
-   if the appropriate box isn't checked */
+   if the appropriate box isn't checked 
 if (isset($_REQUEST['likeCode']) && $_REQUEST['likeCode'] != -1){
 	$dbc->query("DELETE FROM upcLike WHERE upc='$upc'");
 	$lcQ = "INSERT INTO upcLike (upc,likeCode) VALUES ('$upc',{$_REQUEST['likeCode']})";
@@ -208,7 +208,7 @@ if (isset($_REQUEST['likeCode']) && $_REQUEST['likeCode'] != -1){
 elseif (isset($_REQUEST['likeCode']) && $_REQUEST['likeCode'] == -1){
 	$dbc->query("DELETE FROM upcLike WHERE upc='$upc'");
 }
-
+*/
 
 $query1 = "SELECT upc,description,normal_price,department,subdept,
 		foodstamp,scale,qttyEnforced,discount,inUse,deposit
