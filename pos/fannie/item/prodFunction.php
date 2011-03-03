@@ -40,13 +40,13 @@ function itemParse($upc){
 	case 'UPC':
 		$upc = str_pad($upc,13,0,STR_PAD_LEFT);
 		$savedUPC = $upc;
-		$queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM Products as p left join prodExtra as x on p.upc=x.upc WHERE p.upc = '$upc' or x.upc = '$upc'";
+		$queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM products as p left join prodExtra as x on p.upc=x.upc WHERE p.upc = '$upc' or x.upc = '$upc'";
 		break;
 	case 'SKU':
-		$queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM Products as p inner join vendorItems as v ON p.upc=v.upc left join prodExtra as x on p.upc=x.upc WHERE v.sku='$upc'";
+		$queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM products as p inner join vendorItems as v ON p.upc=v.upc left join prodExtra as x on p.upc=x.upc WHERE v.sku='$upc'";
 		break;
 	case 'Brand Prefix':
-	      $queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM Products as p left join prodExtra as x on p.upc=x.upc WHERE p.upc like '%$upc%' order by p.upc";
+	      $queryItem = "SELECT p.*,x.distributor,x.manufacturer FROM products as p left join prodExtra as x on p.upc=x.upc WHERE p.upc like '%$upc%' order by p.upc";
 		break;
 	}
     }else{
@@ -278,7 +278,7 @@ function itemParse($upc){
 	echo "</tr></table></div>";
 	echo "<div style=\"clear:left;text-align:left;color:darkmagenta;\">Last modified: ".date('r');
 	echo "</div></fieldset>";
-
+/* mariposa not using like codes for now
 	echo '<br /><fieldset><legend>Likecode</legend>';
 	echo "<table border=0><tr><td><b>Like code</b> ";
 	echo "<select name=likeCode style=\"{width: 175px;}\"
@@ -297,7 +297,7 @@ function itemParse($upc){
 	echo '</div></td><td valign=top><a href="../reports/RecentSales/?likecode='.$likeCodeRow[1].'" target="_recentlike">';
 	echo 'Likecode Sales History</td>';
 	echo '</tr></table></fieldset>';
-
+*/
 	echo "<br /><fieldset id=marginfs>";
 	echo "<legend>Margin</legend>";
 	echo "</fieldset>";
@@ -605,6 +605,7 @@ function itemParse($upc){
 		echo "</tr></table></div>";
 		echo "<div style=\"clear:left;text-align:left;color:darkmagenta;\">Last modified: {$rowItem['modified']}";
 		echo "</div></fieldset>";
+/* mariposa not using like codes
 			echo '<br /><fieldset><legend>Likecode</legend>';
 			echo "<table border=0><tr><td><b>Like code</b> ";
 			echo "<select name=likeCode style=\"{width: 175px;}\"
@@ -628,11 +629,11 @@ function itemParse($upc){
 			echo '</div></td><td valign=top><a href="../reports/RecentSales/?likecode='.$likeCodeRow[1].'" target="_recentlike">';
 			echo 'Likecode Sales History</td>';
 			echo '</tr></table></fieldset>';
-
 			echo "<br /><fieldset id=marginfs>";
 			echo "<legend>Margin</legend>";
 			MarginFS($rowItem['upc'],$rowItem['cost'],$rowItem['department']);
 			echo "</fieldset>";
+*/
 	}
     return $num;
 }
