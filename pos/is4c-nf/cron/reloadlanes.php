@@ -4,9 +4,9 @@
    --kclair 02/11/2011
 */
 
-//$tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
+$tables = array('products', 'custdata', 'accounts', 'departments', 'subdepts');
 // i think we really only need custdata and accounts synced automatically
-$tables = array('custdata', 'accounts');
+// $tables = array('custdata', 'accounts');
 
 foreach ($tables as $t) {
   synctable($t);
@@ -15,15 +15,15 @@ foreach ($tables as $t) {
 function synctable($table) {
     $table = strtolower($table);
 
-    $server = "192.168.1.109";
-    $serveruser = "root";
-    $serverpass = "is4c";
+    $server = "192.168.1.7";
+    $serveruser = "is4clane";
+    $serverpass = "is4clane";
 
     $laneserver = "localhost";
-    $laneuser = "root";
-    $lanepass = "is4c";
+    $laneuser = "is4clane";
+    $lanepass = "is4clane";
 
-    $outfile = "/home/k/IS4C/pos/is4c/download/" . $table . ".sql";
+    $outfile = "/home/k/IS4C/pos/is4c-nf/download/" . $table . ".sql";
     $mysqldump = "mysqldump -u $serveruser --password=$serverpass -h $server ";
     $mysqldump .= "--add-drop-table --complete-insert --create-options is4c_op $table ";
     $mysqldump .= "> $outfile";
@@ -47,7 +47,7 @@ function synctable($table) {
 
     if (filesize($outfile) > 0) {
         $lane_conn = mysql_connect($laneserver, $laneuser, $lanepass) or error_and_die("connect to $laneserver", mysql_error());
-        mysql_select_db("opdata", $lane_conn) or error_and_die ("select database opdata", mysql_error());
+        mysql_select_db("opdata_new", $lane_conn) or error_and_die ("select database opdata", mysql_error());
         foreach ($opdata_commands as $ocom) {
           mysql_query($ocom, $lane_conn) or error_and_die ($ocom, mysql_error());
         }
