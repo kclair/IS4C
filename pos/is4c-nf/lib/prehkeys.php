@@ -554,9 +554,10 @@ function tender($right, $strl) {
 		}
 
 		// cash_return might really be no cash being returning, but maybe that is set in addchange() 
-		$IS4C_LOCAL->set("change",-1 * $IS4C_LOCAL->get("amtdue"));
+ 		$pos_neg = ($IS4C_LOCAL->get("amtdue") <= 0.005) ? : -1 : 1
+		$IS4C_LOCAL->set("change",$pos_neg * $IS4C_LOCAL->get("amtdue"));
 		$cash_return = $IS4C_LOCAL->get("change");
-		if ($right == 'CA') {
+		if ($right == 'CA' && $IS4C_LOCAL->get("amtdue") <= 0.005) {
 			addchange($cash_return);
 		}else {
 			$IS4C_LOCAL->set("addToBal", $cash_return);
