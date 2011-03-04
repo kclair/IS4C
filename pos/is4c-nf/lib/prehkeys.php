@@ -107,13 +107,12 @@ function setMember($member, $personNumber, $row) {
 	$chargeOk = chargeOk();
 	if ($IS4C_LOCAL->get("balance") != 0 && $member != $IS4C_LOCAL->get("defaultNonMem"))
 	      $IS4C_LOCAL->set("memMsg",$IS4C_LOCAL->get("memMsg")." AR");
-      
+
 	$IS4C_LOCAL->set("memberID",$member);
 	$IS4C_LOCAL->set("memType",$row["memType"]);
 	$IS4C_LOCAL->set("lname",$row["LastName"]);
 	$IS4C_LOCAL->set("fname",$row["FirstName"]);
 	$IS4C_LOCAL->set("Type",$row["Type"]);
-	$IS4C_LOCAL->set("percentDiscount",$row["Discount"]);
         $IS4C_LOCAL->set("Balance", $row["Balance"]);
         $IS4C_LOCAL->set("MaxBalance", $row["max_balance"]);
         $IS4C_LOCAL->set("availCred", $row["max_balance"] - $row["Balance"]);
@@ -122,6 +121,7 @@ function setMember($member, $personNumber, $row) {
 	$IS4C_LOCAL->set('inactMem',0);
 	if ($IS4C_LOCAL->get("Type") == "PC") {
 		$IS4C_LOCAL->set("isMember",1);
+		$IS4C_LOCAL->set("percentDiscount",$row["Discount"]);
 	} else {
            	$IS4C_LOCAL->set("isMember",0);
 		if ($IS4C_LOCAL->get('Type') != 'REG')
