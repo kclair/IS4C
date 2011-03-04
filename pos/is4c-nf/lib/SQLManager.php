@@ -295,7 +295,7 @@ class SQLManager {
 
 		$unquoted = array("money"=>1,"real"=>1,"numeric"=>1,
 			"float4"=>1,"float8"=>1,"bit"=>1,"decimal"=>1,
-			"unknown"=>1);
+			"unknown"=>1, "double"=>1);
 		$strings = array("varchar"=>1,"nvarchar"=>1,"string"=>1,
 				"char"=>1);
 		$dates = array("datetime"=>1);
