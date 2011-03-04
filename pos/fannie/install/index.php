@@ -684,7 +684,7 @@ function create_trans_dbs($con){
         /* trigger to update balance on transactions 
         $balTrig = "CREATE TRIGGER `update_balance` AFTER INSERT ON `dtransactions` 
                     FOR EACH ROW 
-                    UPDATE is4c_op.accounts SET balance=(is4c_op.accounts.balance + NEW.total) 
+                    UPDATE is4c_op.accounts SET balance=(is4c_op.accounts.balance + CAST(NEW.total as decimal(5,2))) 
                     WHERE is4c_op.accounts.CardNo = NEW.card_no ";
         if (!$con->trigger_exists('update_balance', $FANNIE_TRANS_DB)) {
           //$con->query($balTrig, $FANNIE_TRANS_DB);
@@ -936,10 +936,10 @@ function create_dlogs($con){
         create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
                         'newBalanceToday_cust','trans');
 
+*/
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'ar_history','trans');
 
-*/
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'stockpurchases','trans');
 
