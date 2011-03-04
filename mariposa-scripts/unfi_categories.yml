@@ -1,3 +1,52 @@
+4050: #beverage
+  dept: 1
+  subdept: 105
+4200: # candles, grocery
+  dept: 1
+  nofs: 1
+4881: # housewares
+  dept: 1
+  subdept: 104
+  nofs: 1
+4300: # partyy supplies
+  dept: 1
+  subdept: 104
+  nofs: 1
+1001: # store supplies
+4100: # baking supplies, cake decorating
+  dept: 1
+4500: # cocktail mixes and supplies
+  dept: 1
+4018: # kosher for passover
+  dept: 1
+  subdept: 101
+4034: # kosher for passover, crackers
+  dept: 1
+  subdept: 101
+1018: # kosher for passover, bulk
+  dept: 4
+4060: # kosher for passover, candy
+  dept: 1
+  subdept: 101
+4065: # kosher for passover, chips
+  dept: 1
+  subdept: 101
+4030: # kosher for passover, cookies
+  dept: 1
+  subdept: 101
+4800: # sweetenders and syrups, diet
+  dept: 1
+  subdept: 101
+4400: # wine, cooking
+3100: # refrigerated salad dressings
+  dept: 2
+6100: # over the  counter medications
+10: # bulk pasta
+  dept: 4
+  subdept: 117
+45: #herbs, single
+  dept: 13
+  subdept: 129
 24: # carbonated juice / soda
   dept: 1
   subdept: 105

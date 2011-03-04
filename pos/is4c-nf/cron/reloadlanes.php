@@ -4,9 +4,15 @@
    --kclair 02/11/2011
 */
 
-$tables = array('products', 'custdata', 'accounts', 'departments', 'subdepts');
-// i think we really only need custdata and accounts synced automatically
-// $tables = array('custdata', 'accounts');
+// sync custdata and accounts often, others less often
+$now  = localtime(time(), true);
+if ($now['tm_mday'] == 1 && $now['tm_hour'] == 0 && $now['tm_min'] < 5) {
+  // this one should run on the first day of every month during the first cron job
+  // if cron is running this script at any other than 5m then the last conditional likely should change
+  $tables = array('products', 'custdata', 'employees', 'departments', 'tenders');
+}else {
+  $tables = array('custdata', 'accounts');
+}
 
 foreach ($tables as $t) {
   synctable($t);

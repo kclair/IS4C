@@ -74,7 +74,9 @@ echo "<form action=../item/itemMaint.php method=post>";
 echo "<input name=upc type=text id=upc> Enter 
 <select name=\"ntype\">
 <option>UPC</option>
+<!--
 <option>SKU</option>
+-->
 <option>Brand Prefix</option>
 </select> or product name here<br>";
 

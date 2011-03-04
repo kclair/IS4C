@@ -349,6 +349,15 @@ class SQLManager {
 		return True;
 	}
 
+	function trigger_exists($trigger_name, $which_connection='') {
+                if ($which_connection == '')
+                        $which_connection=$this->default_db;
+                $conn = $this->connections[$which_connection];
+		$res = $this->query("show triggers like '$trigger_name'");
+		if ($this->num_rows($res) > 0) return True;
+		return False;
+	}
+
 	/* return the table's definition
 	   Return values:
 		array of (column name, column type) => table found
