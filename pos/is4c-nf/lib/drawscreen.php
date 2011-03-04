@@ -260,7 +260,7 @@ function printheaderb() {
 		$strmemberID = $IS4C_LOCAL->get("memMsg");
 		if ($IS4C_LOCAL->get("isMember") == 0){
 			$strmemberID = str_replace("(0)", "(n/a)", $strmemberID);
-                        $balance = '';
+                        $balance = $IS4C_LOCAL->get("inactMem") ? '<br>* inactive member*' : '';
 		}else {
                   $balance = "<br><span class=\"bigger\">B A L A N C E: ".number_format((double)$IS4C_LOCAL->get("Balance"),2)."</span>";
                 }
