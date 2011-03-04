@@ -60,6 +60,13 @@ mfc_chkdgt = 4
 notfound = 0
 while (line = mfc_products_file.gets)
   row = line.split("\t")
+  desc = row[desccol]
+  desc.gsub!(/"/, '\"')
+  pack = row[packcol]
+  size = row[sizecol]
+  upc = row[upccol]
+  cost = row[costcol]
+  srp = row[srpcol].sub!(/^0+/, '').sub!(/(\d\d)$/, '.\1') || 0
   cat = row[mfc_cat].to_i
   if unfi_cats.include?(cat)
     dept = unfi_cats[cat]['dept'] || 0
