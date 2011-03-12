@@ -31,6 +31,28 @@ function get_departments($dbc=null) {
   return $depts;
 }
 
+function get_subdepartments_for($dept_no, $dbc=null) {
+  # connect here to is4c_op unless $dbc is already defined
+  $subR = $dbc->query("SELECT subdept_no, subdept_name FROM subdepts WHERE dept_no=$dept_no ORDER BY subdept_name");
+  $subdepts = array();
+  while ($row = $dbc->fetch_row($subR)) {
+    $subdepts[$row[0]] = $row[1];
+  }
+  return $subdepts;
+}
+
+// column can be department, category, or product
+// range can be week, month, quarter, year
+function get_margin_report_for($column_key, $column_val, $start, $end, $dbc)
+  # connect here to is4c_op unless $dbc is already defined
+  $query = "SELECT sum(cost), sum(total) from dtransactions 
+    where $column_key='$column_val' AND datetime BETWEEN ($start, $end) AND trans_type='I'";
+  $result = $dbc->query($query);
+  $row = $dbc->fetch_row($result);
+  $margin = ($row[1] - $row[0]) / $row[1];
+  return array($row[0], $row[1], $margin);
+}
+
 function SalesFromDay($date=null, $name=null) {
   $date = $date ? $date : today;
   $whereplus = $name ? " AND t.dept_name=='$name' " : '';
