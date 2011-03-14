@@ -681,6 +681,10 @@ function create_trans_dbs($con){
 	create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
 			'valutecRequestMod','trans');
 
+        create_if_needed($con,$FANNIE_SERVER_DBMS,$FANNIE_TRANS_DB,
+                        'DailyTransactionSummaries','trans');
+
+
         /* trigger to update balance on transactions */
         $balTrig = "CREATE TRIGGER `update_balance` AFTER INSERT ON `dtransactions` 
                     FOR EACH ROW 
