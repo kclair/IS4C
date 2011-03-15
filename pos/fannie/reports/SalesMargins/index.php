@@ -31,21 +31,13 @@ $db_log = new SQLManager($FANNIE_SERVER,$FANNIE_SERVER_DBMS,$FANNIE_LOG_DB,
 // are we posting or getting?
 
 // post: are we making a new report, or getting a past report?
-if (isset($_POST['id'])) {
-  $id = $_POST['id'];
-}else if (isset($_POST['newday'])) {
-  save_current_transaction_report($db_log);
-  start_new_transaction_report($db_log);
+if (isset($_POST['submit'])) {
+  $start
 }else {
-  // display today's
-  $id = get_todays_transaction_report_id($db_log);
 }
 
-$report = get_transaction_report($id, $db_log);
-$available_reports = get_available_transaction_summaries();
-
-$page_title = "Fannie : Today's $name Sales";
-$header = "Today's $name Sales";
+$page_title = "Fannie : Sales - COGS - Margins";
+$header = "Sales - COGS - Margins";
 include($FANNIE_ROOT.'src/header.html');
 include('display_report.php');
 include($FANNIE_ROOT.'src/footer.html');
