@@ -4,12 +4,14 @@ require 'json'
 require "net/https"
 require "uri"
 
+secrets = File.open('./.secrets','r').readlines
+
 # need to get these from other files:
 mysqluser = ''
 mysqlpass = ''
-transdb = ''
-url = ''
-secret = ''
+transdb = 'is4c_trans'
+url = secrets[0].chomp
+secret = secrets[1].chomp
 
 last_fail = nil
 fail_reason = ''
@@ -28,10 +30,11 @@ loop do
     dtransactions.register_no as register_no, dtransactions.emp_no as emp_no, dtransactions.trans_no as trans_no, dtransactions.trans_id as trans_id, dtransactions.upc as upc, dtransactions.description as description, dtransactions.trans_type as trans_type, dtransactions.trans_subtype as trans_subtype, dtransactions.department as department, dtransactions.quantity as quantity, dtransactions.cost as cost, dtransactions.total as total, accounts.id as account_id 
     from is4c_trans.dtransactions dtransactions LEFT JOIN is4c_op.accounts accounts ON (accounts.CardNo = dtransactions.card_no)
     where mess_ok !=1")
-    http = Net::HTTP.new(url)
+    uri = URI.parse(url)
+    http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    request = Net::HTTP::Post.new("/transactions/?secret=#{secret}")
+    request = Net::HTTP::Post.new("/is4c/transactions/?secret=#{secret}")
     while row = res.fetch_hash do 
       puts row.inspect
       #puts JSON.generate(row)
