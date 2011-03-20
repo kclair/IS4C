@@ -36,10 +36,10 @@ elseif(isset($_REQUEST['custdata'])){
 	$db->query("TRUNCATE TABLE custdata");
 	loaddata($db,'custdata');
 }
-elseif(isset($_REQUEST['accounts'])){
-        echo "Loading accounts";
-        $db->query("TRUNCATE TABLE accounts");
-        loaddata($db,'accounts');
+elseif(isset($_REQUEST['accounts'])) {
+	echo "loading accounts";
+	$db->query("TRUNCATE TABLE accounts");
+	loaddata($db, 'accounts');
 }
 elseif(isset($_REQUEST['products'])){
 	echo "Loading products";
@@ -76,8 +76,8 @@ members 6000 through 6010 and non-member 99999.<br />
 <input type=submit name=custdata value="Load sample customers" />
 <hr />
 <b>Accounts</b><br />
-Customer data is the membership information. Sample data includes
-members 6000 through 6010 and non-member 99999.<br />
+Accounts is part of the membership information
+<br />
 <input type=submit name=accounts value="Load sample accounts" />
 <hr />
 <b>Products</b><br />
