@@ -35,6 +35,11 @@ function itemParse($upc){
 
     $queryItem = "";
     $numType = (isset($_REQUEST['ntype'])?$_REQUEST['ntype']:'UPC');
+    if (substr($upc, 0, 3) == 'mfc') {
+      // mariposa will use the reserved upc prefix 020 to identify internal UPCs
+      // so mariposa's internal product 1 would have a upc of 0200000000001
+      $upc = '020'.str_pad(substr($upc, 4), 10, 0, STR_PAD_LEFT);
+    }
     if(is_numeric($upc)){
 	switch($numType){
 	case 'UPC':
