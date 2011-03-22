@@ -92,10 +92,11 @@ while (line = mfc_products_file.gets)
   cost = products[id]['cost']
   pack = products[id]['pack']
   brand = products[id]['brand']
+  scale = (dept == 4) ? 1 : 0
   begin
     realcost = cost.to_f / pack.to_f
     dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata")
-    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{realcost}, 1, 1)"
+    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse, scale) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{realcost}, 1, 1, #{scale})"
     dbh.query(query)   
     query = "INSERT INTO prodExtra (upc, distributor, manufacturer, cost, case_cost, case_quantity) values (#{upc}, 'UNFI', \"#{brand}\", #{realcost}, #{cost}, #{pack})"
     dbh.query(query)   
