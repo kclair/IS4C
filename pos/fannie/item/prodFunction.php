@@ -231,7 +231,7 @@ function itemParse($upc){
         echo "</tr></table></div>";
 	echo "<input type=submit value=\"Create Item\" /><br />";
 
-	if (substr($upc,0,3) == "002"){
+	if (substr($upc,0,3) == "020"){
 		echo "<br /><div align=center><fieldset><legend>Scale</legend>";
 		echo "<input type=hidden value=\"$upc\" name=s_plu />";
 
@@ -524,7 +524,7 @@ function itemParse($upc){
 			<a href='../item/itemMaint.php'><font size='-1'>Back</font></a>";
 				echo "</div> "; 
 
-		if (substr($upc,0,3) == "002"){
+		if (substr($upc,0,3) == "020"){
 			echo "<br /><div align=center><fieldset><legend>Scale</legend>";
 			echo "<input type=hidden value=\"$upc\" name=s_plu />";
 			$scaleR = $dbc->query("SELECT * FROM scaleItems WHERE plu='$upc'");
