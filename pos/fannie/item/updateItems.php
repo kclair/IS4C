@@ -138,8 +138,8 @@ if(isset($_REQUEST['s_plu'])){
 	$s_plu = substr($_REQUEST['s_plu'],3,4);
 	$scale_array = array();
 	$scale_array['plu'] = $upc;
-	$scale_array['itemdesc'] = $ins_array['description'];
-	$scale_array['price'] = $ins_array['normal_price'];
+	$scale_array['itemdesc'] = "'".$ins_array['description']."'";
+	$scale_array['price'] = $ins_array['normal_price'] ? $ins_array['normal_price'] : 0;
 	if (isset($_REQUEST['s_longdesc']) && !empty($_REQUEST['s_longdesc']))
 		$scale_array['itemdesc'] = $dbc->escape($_REQUEST['s_longdesc']);
 	$scale_array['tare'] = isset($_REQUEST['s_tare'])?$_REQUEST['s_tare']:0;
@@ -161,7 +161,7 @@ if(isset($_REQUEST['s_plu'])){
 		$s_label = 23;
 
 	$scale_array['label'] = $s_label;
-	$scale_array['excpetionprice'] = 0.00;
+	$scale_array['exceptionprice'] = 0.00;
 	$scale_array['class'] = "''";
 
 	$chk = $dbc->query("SELECT * FROM scaleItems WHERE plu='$upc'");
