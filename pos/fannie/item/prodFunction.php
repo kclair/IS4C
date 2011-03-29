@@ -35,13 +35,15 @@ function itemParse($upc){
 
     $queryItem = "";
     $numType = (isset($_REQUEST['ntype'])?$_REQUEST['ntype']:'UPC');
-    if (substr($upc, 0, 3) == 'mfc') {
-      if (is_numeric(substr($upc, 3))) {
-        // mariposa will use the reserved upc prefix 020 to identify internal UPCs
-        // so mariposa's internal product 1 would have a upc of 0200000000001
-        $upc = '020'.str_pad(substr($upc, 3), 10, 0, STR_PAD_LEFT);
+    if ($numType == 'PLU') {
+      if (is_numeric($upc)) {
+        // mariposa will use the reserved upc prefix 020 to identify PLUs
+        // so PLU 0001 would have a upc of 0200000000001
+        $upc = '020'.str_pad($upc, 10, 0, STR_PAD_LEFT);
       }else {
-        // add a way to add a new product without knowing the next available mfc product id
+	return;
+	// TODO: add a way to generate a new PLU according to product type
+ 	// waiting on ranges for proroduct types
         $queryNextMFC = "SELECT upc from products where upc LIKE '020%' order by upc desc limit 1";
 	$resultUPC = $dbc->query($queryNextMFC);
 	$rowUPC = $dbc->fetch_array($resultUPC);
@@ -51,6 +53,7 @@ function itemParse($upc){
           $upc = '0200000000001';
 	}
       }
+      $numType = 'UPC';
     }
     if(is_numeric($upc)){
 	switch($numType){
