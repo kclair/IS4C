@@ -16,9 +16,7 @@ unless file and File.exists?(file)
 end
 
 begin
-  dbh = Mysql.real_connect("localhost", "root", "", "is4c_op_test")
-#  dbh.query("TRUNCATE table products")
-#  dbh.query("TRUNCATE table prodExtra")
+  dbh = Mysql.real_connect("localhost", "root", "", "is4c_op")
 rescue Mysql::Error => e
   puts "Error code: #{e.errno}"
   puts "Error message: #{e.error}"
@@ -58,7 +56,7 @@ while (line = deals_file.gets)
     end
     special_price = (special_price * 100).round() / 100.0
     puts 'updating product '+sqlrow['upc']+' from '+price.to_s+' to '+special_price.to_s+' ('+row[deal_amountcol]+')'
-    dbh.query("UPDATE products set special_price=#{special_price} WHERE upc=#{sqlrow['upc']}")
+    dbh.query("UPDATE products set special_price=#{special_price} WHERE id=#{sqlrow['id']}")
   end
 end
 deals_file.close
