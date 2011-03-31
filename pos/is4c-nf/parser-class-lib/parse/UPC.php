@@ -78,8 +78,13 @@ class UPC extends Parser {
 
 		/* make sure upc length is 13 */
 		$upc = "";
-		if (strlen($entered) == 13 && substr($entered, 0, 1) != 0) $upc = "0".substr($entered, 0, 12);
-		else $upc = '020'.str_pad($entered, 10, 0, STR_PAD_LEFT);
+		if (strlen($entered) == 13 && substr($entered, 0, 1) != 0) {
+ 		  $upc = "0".substr($entered, 0, 12);
+		}else if (strlen($entered) < 6)  { // this is a plu
+		  $upc = '020'.str_pad($entered, 10, 0, STR_PAD_LEFT);
+		}else {
+		  $upc = $entered;
+		}
 
 		/* extract scale-sticker prices */
 		$scaleprice = 0;
