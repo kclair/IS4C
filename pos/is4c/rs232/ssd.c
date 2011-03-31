@@ -61,12 +61,13 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    /* If we got a good PID, then we can exit the parent process. */
+    /* If we got a good PID, then we can exit the parent process. */ 
     if (pid > 0) {
         exit(EXIT_SUCCESS);
     }
+    
 
-    /* Change the file mode mask */
+    /* Change the file mode mask */ 
     umask(0);
 
     /* Create a new SID for the child process */
@@ -82,7 +83,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    /* Close out the standard file descriptors */
+    /* Close out the standard file descriptors */ 
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -90,10 +91,10 @@ int main(void) {
     int open_port(void) {
         int fd;                   /* File descriptor for the port */
 
-        fd = open("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+        fd = open("/dev/ttyS2", O_RDWR | O_NOCTTY | O_NDELAY);
 
         if (fd == -1) {
-         fprintf(stderr, "open_port: Unable to open /dev/ttyS0 - %s\n",
+         fprintf(stderr, "open_port: Unable to open /dev/ttyS2 - %s\n",
              strerror(errno));
         }
 
@@ -131,18 +132,33 @@ int main(void) {
     tcsetattr(mainfd, TCSANOW, &options);
     FILE *fp_scanner;
     FILE *fp_scale;
+    /* kclair debug */
+    FILE *fp_debug;
+    fp_debug = fopen("ssd_debug", "w");
+    fprintf(fp_debug, "before main while loop\n");
+    fclose(fp_debug);
+    /* end kclair debug */
     int in_buffer = 0;
     int i;
     n = 0;
     num = 0;
     write(mainfd, "S11\r", 5);
     write(mainfd, "S14\r", 5);
+    /* kclair debug */
+    fp_debug = fopen("ssd_debug", "a");
+    fprintf(fp_debug, "after write wakeup commands\n");
+    fclose(fp_debug);
+    /* end kclair debug */
 
     while (1) {
+      write(mainfd, "S11\r", 5);
+    write(mainfd, "S14\r", 5);
+
         in_buffer = read(mainfd, &chout, 1); /* Read character from ABU */
 
         // if data is present in the serial port buffer
         if (in_buffer != -1) {
+
             if (chout[0] == 'S') {
                 num = 0;
             }
@@ -150,15 +166,28 @@ int main(void) {
             serialBuffer[num] = chout[0];
             num++;
 
-            if (chout[0] == '\n' && num > 2) {
+          /* kclair debug */
+          fp_debug = fopen("ssd_debug", "a");
+          fprintf(fp_debug, "data present in buffer! num is %d. before if statement. chout is %s\n", num, chout);
+          fclose(fp_debug);
+          /* end kclair debug */
+ 
+
+            if (chout[0] == '0' && num > 2) {
                 serialBuffer[num] = '\0';
+
+             /* kclair debug */
+          fp_debug = fopen("ssd_debug", "a");
+          fprintf(fp_debug, "data present in buffer! num is %d. serialBuffer 1 is %d\n", num, serialBuffer[1]);
+          fclose(fp_debug);
+          /* end kclair debug */
 
                 /**************** process scanned data ****************/
                 if (serialBuffer[1] == '0') {
                     for (i = 0; i < 17; i++) {
                         scannerInput[i] = serialBuffer[i+4];
                     }
-                    fp_scanner = fopen("/pos/is4c/rs232/scanner", "w");
+                    fp_scanner = fopen("/scanner", "w");
                     fprintf(fp_scanner, "%s\n", scannerInput);
                     fclose(fp_scanner);
                 }
@@ -171,7 +200,7 @@ int main(void) {
                     else if (serialBuffer[2] == '4' && serialBuffer[3] == '3') {
                         write(mainfd, "S11\r", 5);
                         if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen("/pos/is4c/rs232/scale", "w");
+                            fp_scale = fopen("/scale", "w");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
                         }
@@ -179,7 +208,7 @@ int main(void) {
                     else if (serialBuffer[2] == '4') {
                         write(mainfd, "S14\r", 5);
                         if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen("/pos/is4c/rs232/scale", "w");
+                            fp_scale = fopen("/scale", "w");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
                         }

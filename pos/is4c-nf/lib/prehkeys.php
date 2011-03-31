@@ -367,11 +367,16 @@ function tender($right, $strl) {
 		return $ret;
 	}
         */
-	//alert customer that charge + current balance exceeds avail credit 
         elseif ($right == "MB" && ($strl > 0)) {
 		$ret['output'] = xboxMsg("Payment with Member Balance cannot take an amount");
                 return $ret;
 	}
+	//alert customer that charge + current balance exceeds avail credit 
+ 	// this needs to be changed to a warning somehow
+	//elseif ($right == "MB" && ($IS4C_LOCAL->get("availCred") < $IS4C_LOCAL->get("amtdue"))) {
+	//	$ret['output'] = xboxMsg("account ".$IS4C_LOCAL->get("accountName")."<BR> has $" . $IS4C_LOCAL->get("availCred") . " available and will be over their balance limit after this transaction.");
+	//	return $ret;
+	//}
 	elseif ($right == "MB" && ($IS4C_LOCAL->get("availCred") < $IS4C_LOCAL->get("amtdue"))) {
                 $IS4C_LOCAL->set("warned",1);
                 $IS4C_LOCAL->set("warnBoxType","warnOverbalance");
@@ -557,15 +562,15 @@ function tender($right, $strl) {
 				$ret['main_frame'] = $chk;
 			return $ret;
 		}
-
 		// cash_return might really be no cash being returning, but maybe that is set in addchange() 
- 		$pos_neg = ($IS4C_LOCAL->get("amtdue") <= 0.005) ? : -1 : 1
+ 		$pos_neg = ($IS4C_LOCAL->get("amtdue") <= 0.005) ? -1 : 1;
 		$IS4C_LOCAL->set("change",$pos_neg * $IS4C_LOCAL->get("amtdue"));
 		$cash_return = $IS4C_LOCAL->get("change");
 		if ($right == 'CA' && $IS4C_LOCAL->get("amtdue") <= 0.005) {
 			addchange($cash_return);
 		}else {
 			$IS4C_LOCAL->set("addToBal", $cash_return);
+			$IS4C_LOCAL->set("runningTotal", $IS4C_LOCAL->get("amtdue"));
 			//addtobal($cash_return);
 		}
 
