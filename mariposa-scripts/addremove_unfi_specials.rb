@@ -55,8 +55,9 @@ while (line = deals_file.gets)
       end
     end
     special_price = (special_price * 100).round() / 100.0
+    discounttype = (action == 'add') ? 1 : 0
     puts 'updating product '+sqlrow['upc']+' from '+price.to_s+' to '+special_price.to_s+' ('+row[deal_amountcol]+')'
-    dbh.query("UPDATE products set special_price=#{special_price} WHERE id=#{sqlrow['id']}")
+    dbh.query("UPDATE products set special_price=#{special_price}, discounttype=#{discounttype} WHERE id=#{sqlrow['id']}")
   end
 end
 deals_file.close
