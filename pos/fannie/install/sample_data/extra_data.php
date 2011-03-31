@@ -36,10 +36,20 @@ elseif(isset($_REQUEST['custdata'])){
 	$db->query("TRUNCATE TABLE custdata");
 	loaddata($db,'custdata');
 }
+elseif(isset($_REQUEST['accounts'])) {
+	echo "loading accounts";
+	$db->query("TRUNCATE TABLE accounts");
+	loaddata($db, 'accounts');
+}
 elseif(isset($_REQUEST['products'])){
 	echo "Loading products";
 	$db->query("TRUNCATE TABLE products");
 	loaddata($db,'products');
+}
+elseif(isset($_REQUEST['tenders'])){
+        echo "Loading tenders";
+        $db->query("TRUNCATE TABLE tenders");
+        loaddata($db,'tenders');
 }
 elseif(isset($_REQUEST['depts'])){
 	echo "Loading departments";
@@ -65,10 +75,18 @@ Customer data is the membership information. Sample data includes
 members 6000 through 6010 and non-member 99999.<br />
 <input type=submit name=custdata value="Load sample customers" />
 <hr />
+<b>Accounts</b><br />
+Accounts is part of the membership information
+<br />
+<input type=submit name=accounts value="Load sample accounts" />
+<hr />
 <b>Products</b><br />
 Stuff to sell. There's a lot of sample data. I think this might
 be the Wedge's or at least a snapshot of it.<br />
 <input type=submit name=products value="Load sample products" />
+<hr />
+<b>Tenders</b><br />
+<input type=submit name=tenders value="Load sample tenders" />
 <hr />
 <b>Departments</b> &amp; <b>Subdepts</b><br />
 Products get categorized into departments &amp; subdepartments.

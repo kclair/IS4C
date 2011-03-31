@@ -35,6 +35,26 @@ function itemParse($upc){
 
     $queryItem = "";
     $numType = (isset($_REQUEST['ntype'])?$_REQUEST['ntype']:'UPC');
+    if ($numType == 'PLU') {
+      if (is_numeric($upc)) {
+        // mariposa will use the reserved upc prefix 020 to identify PLUs
+        // so PLU 0001 would have a upc of 0200000000001
+        $upc = '020'.str_pad($upc, 10, 0, STR_PAD_LEFT);
+      }else {
+	return;
+	// TODO: add a way to generate a new PLU according to product type
+ 	// waiting on ranges for proroduct types
+        $queryNextMFC = "SELECT upc from products where upc LIKE '020%' order by upc desc limit 1";
+	$resultUPC = $dbc->query($queryNextMFC);
+	$rowUPC = $dbc->fetch_array($resultUPC);
+	if ($rowUPC['upc']) {
+	  $upc = $rowUPC['upc'] + 1;
+        }else {
+          $upc = '0200000000001';
+	}
+      }
+      $numType = 'UPC';
+    }
     if(is_numeric($upc)){
 	switch($numType){
 	case 'UPC':
@@ -211,7 +231,7 @@ function itemParse($upc){
         echo "</tr></table></div>";
 	echo "<input type=submit value=\"Create Item\" /><br />";
 
-	if (substr($upc,0,3) == "002"){
+	if (substr($upc,0,3) == "020"){
 		echo "<br /><div align=center><fieldset><legend>Scale</legend>";
 		echo "<input type=hidden value=\"$upc\" name=s_plu />";
 
@@ -504,7 +524,7 @@ function itemParse($upc){
 			<a href='../item/itemMaint.php'><font size='-1'>Back</font></a>";
 				echo "</div> "; 
 
-		if (substr($upc,0,3) == "002"){
+		if (substr($upc,0,3) == "020"){
 			echo "<br /><div align=center><fieldset><legend>Scale</legend>";
 			echo "<input type=hidden value=\"$upc\" name=s_plu />";
 			$scaleR = $dbc->query("SELECT * FROM scaleItems WHERE plu='$upc'");

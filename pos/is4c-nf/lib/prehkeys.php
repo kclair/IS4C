@@ -377,6 +377,15 @@ function tender($right, $strl) {
 	//	$ret['output'] = xboxMsg("account ".$IS4C_LOCAL->get("accountName")."<BR> has $" . $IS4C_LOCAL->get("availCred") . " available and will be over their balance limit after this transaction.");
 	//	return $ret;
 	//}
+	elseif ($right == "MB" && ($IS4C_LOCAL->get("availCred") < $IS4C_LOCAL->get("amtdue"))) {
+                $IS4C_LOCAL->set("warned",1);
+                $IS4C_LOCAL->set("warnBoxType","warnOverbalance");
+                $IS4C_LOCAL->set("boxMsg",sprintf("<b>Member Imbalance</b><br />Total amount due $%.2f exceeds available balance %.2f<br /><font size=-1>[enter] to continue, [clear] to cancel</font>",
+                $IS4C_LOCAL->get("amtdue"),
+                $IS4C_LOCAL->get("availCred")));
+                $IS4C_LOCAL->set("strEntered","TL");
+                return $IS4C_PATH."gui-modules/boxMsg2.php";
+	}
         /* 
 	elseif ($right == "MI" && $charge_ok == 1 && $IS4C_LOCAL->get("availBal") < 0) {
 		$ret['output'] = xboxMsg("member ".$IS4C_LOCAL->get("memberID")."<BR>is overlimit");
@@ -541,7 +550,7 @@ function tender($right, $strl) {
 		getsubtotals();
 	}
 
-	if ($IS4C_LOCAL->get("amtdue") <= 0.005 || $IS4C_LOCAL->get("isMember") == 1){
+	if ($IS4C_LOCAL->get("amtdue") <= 0.005 || $right == 'MB'){
 		if ($IS4C_LOCAL->get("paycard_mode") == PAYCARD_MODE_AUTH
 		    && ($right == "CC" || $right == "GD")){
 			$IS4C_LOCAL->set("change",0);

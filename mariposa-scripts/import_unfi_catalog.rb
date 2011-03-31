@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'mysql'
-#require 'fastercsv'
 require 'yaml'
 
 all_products_file = File.new('./unfi.txt', 'r')
@@ -41,37 +40,30 @@ end
 all_products_file.close
 
 begin
-  dbh = Mysql.real_connect("127.0.0.1", "root", "", "is4c_op")
-  dbh.query("TRUNCATE table products")
-  dbh.query("TRUNCATE table prodExtra")
+  dbh = Mysql.real_connect("localhost", "root", "", "is4c_op_test")
+#  dbh.query("TRUNCATE table products")
+#  dbh.query("TRUNCATE table prodExtra")
 rescue Mysql::Error => e
   puts "Error code: #{e.errno}"
   puts "Error message: #{e.error}"
   puts "Error SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")
-  die
+  exit
 end
 
 unfi_cats = YAML.load_file('./unfi_categories.yml')
 mfc_products_file = File.new('./mariposa_products.txt','r')
-mfc_cat = 1
-mfc_prodid = 3
-mfc_chkdgt = 4
-
 notfound = 0
 while (line = mfc_products_file.gets)
   row = line.split("\t")
   desc = row[desccol]
   desc.gsub!(/"/, '\"')
-  pack = row[packcol]
-  size = row[sizecol]
-  upc = row[upccol]
-  cost = row[costcol]
   srp = row[srpcol].sub!(/^0+/, '').sub!(/(\d\d)$/, '.\1') || 0
-  cat = row[mfc_cat].to_i
+  cat = row[6].to_i
   if unfi_cats.include?(cat)
     dept = unfi_cats[cat]['dept'] || 0
     subdept = unfi_cats[cat]['subdept'] || 0 
     fs = unfi_cats[cat]['nofs'] ? 0 : 1
+    tax = unfi_cats[cat]['tax'] ? 1 : 0
   else
     puts 'no category for '+cat.to_s+' for row '+row.inspect
     exit
@@ -79,7 +71,7 @@ while (line = mfc_products_file.gets)
     subdept = 0
     fs = 1
   end
-  id = row[mfc_prodid].to_s + row[mfc_chkdgt].to_s
+  id = row[0]
   if id.nil? or !products[id]
     puts 'id or products[id] was nil for '+id
     notfound += 1
@@ -92,15 +84,37 @@ while (line = mfc_products_file.gets)
   cost = products[id]['cost']
   pack = products[id]['pack']
   brand = products[id]['brand']
+  scale = (dept == 4) ? 1 : 0
+  realcost = cost.to_f / pack.to_f
   begin
-    realcost = cost.to_f / pack.to_f
-    dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "opdata")
-    query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{realcost}, 1, 1)"
-    dbh.query(query)   
-    query = "INSERT INTO prodExtra (upc, distributor, manufacturer, cost, case_cost, case_quantity) values (#{upc}, 'UNFI', \"#{brand}\", #{realcost}, #{cost}, #{pack})"
-    dbh.query(query)   
+    # see if product exists
+    dbh ||= Mysql.real_connect("localhost", "is4clane", "is4clane", "is4c_op_test")
+    query = "SELECT products_id from prodExtra WHERE dist_id=#{id}" #dist_id=#{id}"
+    res = dbh.query(query)
+    if res and (row= res.fetch_row)
+      existing_id = row[0]
+    else
+      existing_id = nil
+    end
+    if existing_id
+      # don't overwrite most values if replacing a product
+      puts 'updating product '+upc.to_s
+      query = "UPDATE products SET description=\"#{desc}\", normal_price=#{srp}, size='#{size}', cost=#{realcost} WHERE id=#{existing_id}"
+      query2 = "UPDATE prodExtra SET distributor='UNFI', manufacturer=\"#{brand}\", cost=#{realcost}, case_cost=#{cost}, case_quantity=#{pack}, dist_id=#{id} WHERE products_id=#{existing_id}"
+      dbh.query(query)
+      dbh.query(query2)
+    else 
+      puts 'adding product '+upc.to_s
+      query = "INSERT INTO products (upc, description, normal_price, size, department, subdept, foodstamp, cost, discount, inUse, scale, tax) values (#{upc}, \"#{desc}\", #{srp}, '#{size}', #{dept}, #{subdept}, #{fs}, #{realcost}, 1, 1, #{scale}, #{tax})"
+      dbh.query(query)   
+      res = dbh.query("SELECT id from products where upc=#{upc}")
+      row = res.fetch_row
+      existing_id = row[0] 
+      query2 = "INSERT INTO prodExtra (upc, distributor, manufacturer, cost, case_cost, case_quantity, dist_id, products_id) values (#{upc}, 'UNFI', \"#{brand}\", #{realcost}, #{cost}, #{pack}, #{id}, #{existing_id})"
+    end
+    dbh.query(query2)   
   rescue Mysql::Error => e
-     puts "Query: #{query}"
+     puts "Query: #{query}\n#{query2}"
      puts "Error code: #{e.errno}"
      puts "Error message: #{e.error}"
      puts "Error SQLSTATE: #{e.sqlstate}" if e.respond_to?("sqlstate")

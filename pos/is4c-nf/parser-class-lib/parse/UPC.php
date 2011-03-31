@@ -79,14 +79,16 @@ class UPC extends Parser {
 		/* make sure upc length is 13 */
 		$upc = "";
 		if (strlen($entered) == 13 && substr($entered, 0, 1) != 0) $upc = "0".substr($entered, 0, 12);
-		else $upc = substr("0000000000000".$entered, -13);
+		else $upc = '020'.str_pad($entered, 10, 0, STR_PAD_LEFT);
 
 		/* extract scale-sticker prices */
 		$scaleprice = 0;
-		if (substr($upc, 0, 3) == "002") {
+		if (substr($upc, 0, 3) == "020") {
 			$scaleprice = truncate2(substr($upc, -4)/100);
+			/* not needed by marpiosa
 			$upc = substr($upc, 0, 8)."00000";
 			if ($upc == "0020006000000" || $upc == "0020010000000") $scaleprice *= -1;
+			*/
 		}
 
 		$db = pDataConnect();
@@ -155,7 +157,7 @@ class UPC extends Parser {
 		   retry the UPC in a few milliseconds and see
 		*/
 		if ($scale != 0 && $IS4C_LOCAL->get("weight") == 0 && 
-			$IS4C_LOCAL->get("quantity") == 0 && substr($upc,0,3) != "002") {
+			$IS4C_LOCAL->get("quantity") == 0) {
 
 			$IS4C_LOCAL->set("SNR",1);
 			$ret['output'] = boxMsg("please put item on scale");
@@ -166,7 +168,7 @@ class UPC extends Parser {
 
 		/* got a scale weight, make sure the tare
 		   is valid */
-		if ($scale != 0 and substr($upc,0,3) != "002"){
+		if ($scale != 0){
 			$quantity = $IS4C_LOCAL->get("weight") - $IS4C_LOCAL->get("tare");
 			if ($IS4C_LOCAL->get("quantity") != 0) 
 				$quantity = $IS4C_LOCAL->get("quantity") - $IS4C_LOCAL->get("tare");
@@ -274,7 +276,7 @@ class UPC extends Parser {
 
 		/* add in sticker price and calculate a quantity
 		   if the item is stickered, scaled, and on sale */
-		if (substr($upc,0,3) == "002"){
+		if (substr($upc,0,3) == "020"){
 			if ($DiscountObject->isSale() && $scale == 1)
 				$quantity = truncate2($scaleprice / $row["normal_price"]);
 			$row['normal_price'] = $scaleprice;

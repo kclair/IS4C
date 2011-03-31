@@ -73,6 +73,7 @@ id just provides a guaranteed-unique row identifier.
 $CREATE['op.custdata'] = "
 	CREATE TABLE `custdata` (
 	  `CardNo` int(8) default NULL,
+	  `account_id` int(8) NOT NULL,
 	  `personNum` tinyint(4) NOT NULL default '1',
 	  `LastName` varchar(30) default NULL,
 	  `FirstName` varchar(30) default NULL,

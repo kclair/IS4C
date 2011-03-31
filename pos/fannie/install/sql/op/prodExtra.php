@@ -39,6 +39,7 @@ $CREATE['op.prodExtra'] = "
 		`case_quantity` varchar(15) default NULL,
 		`case_cost` numeric(10,2) default NULL,
 		`case_info` varchar(100) default NULL,
+		`dist_id` varchar(255) default NULL,
 		PRIMARY KEY (`upc`)
 	)
 "; 

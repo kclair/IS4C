@@ -8,10 +8,12 @@
   dept: 1
   subdept: 104
   nofs: 1
+  tax: 1
 4300: # partyy supplies
   dept: 1
   subdept: 104
   nofs: 1
+  tax: 1
 1001: # store supplies
 4100: # baking supplies, cake decorating
   dept: 1
@@ -83,8 +85,6 @@
   subdept: 129
 4: # nuts and seed
   dept: 4
-20: # bulk pasta
-  dept: 4
 5: # bulk snacks, trail mix, cereals
   dept: 4
 97: # perishable beverages
@@ -126,6 +126,7 @@
   dept: 1
   subdept: 104
   nofs: 1
+  tax: 1
 75: # misc boxes, labels, internal supplies
   dept: 14
   nofs: 1
@@ -136,9 +137,11 @@
   dept: 1
   subdept: 104
   nofs: 1
+  tax: 1
 90: # pet food and care
   dept: 1
   subdept: 103
+  tax: 1
 91: # clothing
   dept: 14
   subdept: 132
