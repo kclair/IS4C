@@ -51,10 +51,6 @@
 #include <termios.h> /* POSIX terminal control definitions */
 #include <ctype.h>
 
-#define SSD_SERIAL_PORT "/dev/ttyS0"
-#define SCALE_OUTPUT_FILE "/pos/is4c/rs232/scale"
-#define SCANNER_OUTPUT_FILE "/pos/is4c/rs232/scanner"
-
 int main(void) {
     /* Our process ID and Session ID */
     pid_t pid, sid;
@@ -65,12 +61,13 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    /* If we got a good PID, then we can exit the parent process. */
+    /* If we got a good PID, then we can exit the parent process. */ 
     if (pid > 0) {
         exit(EXIT_SUCCESS);
     }
+    
 
-    /* Change the file mode mask */
+    /* Change the file mode mask */ 
     umask(0);
 
     /* Create a new SID for the child process */
@@ -86,7 +83,7 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    /* Close out the standard file descriptors */
+    /* Close out the standard file descriptors */ 
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -94,10 +91,10 @@ int main(void) {
     int open_port(void) {
         int fd;                   /* File descriptor for the port */
 
-        fd = open(SSD_SERIAL_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
+        fd = open("/dev/ttyS2", O_RDWR | O_NOCTTY | O_NDELAY);
 
         if (fd == -1) {
-         fprintf(stderr, "open_port: Unable to open /dev/ttyS0 - %s\n",
+         fprintf(stderr, "open_port: Unable to open /dev/ttyS2 - %s\n",
              strerror(errno));
         }
 
@@ -107,9 +104,9 @@ int main(void) {
     int mainfd = 0;
     int num, n; // File descriptor
     char chout[16];
-    char serialBuffer[100];
+    char serialBuffer[16];
     char preBuffer[16];
-    char scannerInput[100];
+    char scannerInput[12];
     char scaleInput[9];
     char scaleBuffer[9] = "000000000";
     struct termios options;
@@ -140,13 +137,15 @@ int main(void) {
     n = 0;
     num = 0;
     write(mainfd, "S11\r", 5);
-    write(mainfd, "S14\r", 5);
 
     while (1) {
+      write(mainfd, "S11\r", 5);
+
         in_buffer = read(mainfd, &chout, 1); /* Read character from ABU */
 
         // if data is present in the serial port buffer
         if (in_buffer != -1) {
+
             if (chout[0] == 'S') {
                 num = 0;
             }
@@ -154,56 +153,47 @@ int main(void) {
             serialBuffer[num] = chout[0];
             num++;
 
-            if (chout[0] == '\n' && num > 2) {
+            if (chout[0] == '\r' && num > 2) {
                 serialBuffer[num] = '\0';
 
                 /**************** process scanned data ****************/
                 if (serialBuffer[1] == '0') {
-		    if (serialBuffer[3] == 'A' || serialBuffer[3] == 'E' || serialBuffer[3] == 'F'){
-			/* familar UPC A/E/F */
-                        for (i = 0; i < 17; i++) {
-                            scannerInput[i] = serialBuffer[i+4];
-                        }
-		    }
-		    else if (serialBuffer[3] == 'R'){
-			/* GS1 databar */
-			scannerInput[0] = 'G';
-			scannerInput[1] = 'S';
-			scannerInput[2] = '1';
-			scannerInput[3] = '~';
-			scannerInput[4] = serialBuffer[3];
-			scannerInput[5] = serialBuffer[4];
-
-			for (i=5; i<= num; i++)	{
-			    scannerInput[i+1] = serialBuffer[i];
-			}	
-		    }
-		    else {
-			/* unknown barcode type */
-			scannerInput[0] = '\0';
-		    }
-                    fp_scanner = fopen(SCANNER_OUTPUT_FILE, "w");
+                    for (i = 0; i < 17; i++) {
+                        scannerInput[i] = serialBuffer[i+4];
+                    }
+                    fp_scanner = fopen("/scanner", "w");
                     fprintf(fp_scanner, "%s\n", scannerInput);
                     fclose(fp_scanner);
                 }
 
                 /**************** process weight data ******************/
                 if (serialBuffer[1] == '1') {
+
                     if (serialBuffer[2] == '1') {
-                        write(mainfd, "S14\r", 5);
+		        /* the next line used to be this 
+                        write(mainfd, "S14\r", 5); */
+                        /* this line was here before, but it breaks things...
+                        if (strcmp(scaleBuffer, serialBuffer) != 0) { */
+                            fp_scale = fopen("/scale", "w");
+                            fprintf(fp_scale, "%s\n", serialBuffer);
+                            fclose(fp_scale);
+                        /*}*/
+
                     }
-                    else if (serialBuffer[2] == '4' && serialBuffer[3] == '3') {
+		    /* this line used to be what follows. keeping it in case it's useful in the future 
+                    else if (serialBuffer[2] == '2' && serialBuffer[3] == '3') { */
+                    else if (serialBuffer[2] == '2') { 
                         write(mainfd, "S11\r", 5);
                         if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen(SCALE_OUTPUT_FILE, "w");
+                            fp_scale = fopen("/scale", "a");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
                         }
-                    }
+		    }
                     else if (serialBuffer[2] == '4') {
                         write(mainfd, "S14\r", 5);
                         if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen(SCALE_OUTPUT_FILE, "w");
+                            fp_scale = fopen("/scale", "a");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
                         }
