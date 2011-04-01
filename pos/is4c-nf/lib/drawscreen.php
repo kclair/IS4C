@@ -408,13 +408,14 @@ function scaledisplaymsg($input=""){
 	$IS4C_LOCAL->set("scale",0);
 	$IS4C_LOCAL->set("weight",0);
 
-	if (substr($reginput, 0, 3) == "S11") {
-		if (!substr($reginput, 3) || 
-		    !is_numeric(substr($reginput, 3))) {
+	if (substr($reginput, 0, 3) == "S11" || substr($reginput, 0, 4) == "S144") {
+		$sindex =  (substr($reginput, 0, 3) == "S11") ? 3 : 4;
+		if (!substr($reginput, $sindex) || 
+		    !is_numeric(substr($reginput, $sindex))) {
 			$display_weight = "_ _ _ _";
 		}
 		else {
-			$weight = number_format(substr($reginput, 3)/100, 2);
+			$weight = number_format(substr($reginput, $sindex)/100, 2);
 			$IS4C_LOCAL->set("weight",$weight);
 			$display_weight = $weight." lb";
 			$IS4C_LOCAL->set("scale",1);
