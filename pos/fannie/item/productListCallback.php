@@ -474,10 +474,11 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor, x.manufacturer 
+			x.distributor, x.manufacturer, s.subdept_name as subdept 
                         FROM products as i LEFT JOIN departments as d ON i.department = d.dept_no
 			LEFT JOIN taxrates AS t ON t.id = i.tax
-			LEFT JOIN prodExtra as x on i.upc = x.upc
+			LEFT JOIN prodExtra as x on i.upc = x.upc 
+			LEFT JOIN subdepts as s on i.subdept = s.subdept_no 
                         WHERE i.department BETWEEN $deptStart AND $deptEnd 
                         ORDER BY $order $dir";
 			//ORDER BY i.$order,i.UPC";
@@ -572,6 +573,12 @@ function deleteCheck(upc,description){
 				echo "$otherdir>Dept</a></th>";
 			else
 				echo "asc>Dept</a></th>";	
+                        echo "<th><a href=$urlbase&sort=subdept_name&dir=";
+                        if ($order == 'subdept_name')
+                                echo "$otherdir>SubDept</a></th>";
+                        else
+                                echo "asc>SubDept</a></th>";
+
 			echo "<th><a href=$urlbase&sort=x.manufacturer&dir=";
                        if ($order == 'x.manufacturer')
                                 echo "$otherdir>Brand</a></th>";
@@ -584,7 +591,7 @@ function deleteCheck(upc,description){
 				echo "desc>Price</a></th>";	
 		}
 		else
-			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Brand</th><th>Price</th>";
+			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>SubDept><th>Brand</th><th>Price</th>";
 		echo "<th>Tax</th><th>FS</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
 		
 		/*
@@ -610,6 +617,7 @@ function deleteCheck(upc,description){
 				echo "<td align=center>$row[0]</td>";
 			echo "<td align=center id=$row[0]desc>$row[1]</td>";
 			echo "<td align=center id=$row[0]dept>$row[2]</td>";
+			echo "<td align=center id=$row[0]subdept>$row[11]</td>";
 			echo "<td align=center id=$row[0]brand>$row[10]</td>";
 			echo "<td align=center id=$row[0]price>$row[3]</td>";
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
