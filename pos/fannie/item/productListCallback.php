@@ -65,6 +65,7 @@ if (isset($_GET['action'])){
 			$loc = 1;
 		else
 			$loc = 0;
+		$desc = str_replace("'", "\'", $desc);
 
 		$upQ = "update products set
 				description='$desc',
@@ -93,7 +94,7 @@ if (isset($_GET['action'])){
 				$dbc->escape($supplier),$upc);	
 		$dbc->query($up2Q);
 
-		updateProductAllLanes($upc);
+		//updateProductAllLanes($upc);
 		break;
 	case 'deleteCheck':
 		$upc = $_GET['upc'];
@@ -129,7 +130,7 @@ if (isset($_GET['action'])){
 		$delXQ = "delete from prodExtra where upc='$upc'";
 		$delXR = $dbc->query($delXQ);
 
-		deleteProductAllLanes($upc);
+		//deleteProductAllLanes($upc);
 		break;
 	}
 	
@@ -259,14 +260,14 @@ function edit(upc){
 	var sel_str = "<select id=\"f"+upc+"tax\">";
 	var taxrates = document.getElementById('taxrates').value.split(':');
 	var taxnames = document.getElementById('taxnames').value.split(':');
-	if (tax == 'X') sel_str += "<option value=1 selected>Regular</option>";
-	else sel_str += "<option value=1>Regular</option>";
+        if (tax == '-') sel_str += "<option value=0 selected>No Tax</option>";
+        else sel_str += "<option value=0>No Tax</option>";
+	if (tax == 'X') sel_str += "<option value=1 selected>Tax</option>";
+	else sel_str += "<option value=1>Tax</option>";
 	for (var i=2; i<taxrates.length; i++){
 		if (tax == taxnames[i].charAt(0)) sel_str += "<option value="+taxrates[i]+" selected>"+taxnames[i]+"</option>";
 		else sel_str += "<option value=2>Deli</option>";
 	}
-	if (tax == '-') sel_str += "<option value=0 selected>No Tax</option>";
-	else sel_str += "<option value=0>No Tax</option>";
 	document.getElementById(upc+'tax').innerHTML = sel_str;
 		
 	var fs = document.getElementById(upc+'fs').innerHTML;
