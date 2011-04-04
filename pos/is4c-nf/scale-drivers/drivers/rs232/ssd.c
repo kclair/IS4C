@@ -132,14 +132,22 @@ int main(void) {
     tcsetattr(mainfd, TCSANOW, &options);
     FILE *fp_scanner;
     FILE *fp_scale;
+    /* kclair debug 
+    FILE *fp_debug;
+    fp_debug = fopen("ssd_debug", "w");
+    fprintf(fp_debug, "before main while loop\n");
+    fclose(fp_debug);
+     end kclair debug */
     int in_buffer = 0;
     int i;
     n = 0;
     num = 0;
     write(mainfd, "S11\r", 5);
+    write(mainfd, "S14\r", 5);
 
     while (1) {
       write(mainfd, "S11\r", 5);
+      write(mainfd, "S14\r", 5);
 
         in_buffer = read(mainfd, &chout, 1); /* Read character from ABU */
 
@@ -152,6 +160,7 @@ int main(void) {
 
             serialBuffer[num] = chout[0];
             num++;
+
 
             if (chout[0] == '\r' && num > 2) {
                 serialBuffer[num] = '\0';
@@ -168,32 +177,21 @@ int main(void) {
 
                 /**************** process weight data ******************/
                 if (serialBuffer[1] == '1') {
-
                     if (serialBuffer[2] == '1') {
-		        /* the next line used to be this 
-                        write(mainfd, "S14\r", 5); */
-                        /* this line was here before, but it breaks things...
-                        if (strcmp(scaleBuffer, serialBuffer) != 0) { */
+                        write(mainfd, "S14\r", 5);
+                    }
+                    else if (serialBuffer[2] == '4' && serialBuffer[3] == '3') {
+                        write(mainfd, "S11\r", 5);
+                        if (strcmp(scaleBuffer, serialBuffer) != 0) {
                             fp_scale = fopen("/scale", "w");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
-                        /*}*/
-
-                    }
-		    /* this line used to be what follows. keeping it in case it's useful in the future 
-                    else if (serialBuffer[2] == '2' && serialBuffer[3] == '3') { */
-                    else if (serialBuffer[2] == '2') { 
-                        write(mainfd, "S11\r", 5);
-                        if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen("/scale", "a");
-                            fprintf(fp_scale, "%s\n", serialBuffer);
-                            fclose(fp_scale);
                         }
-		    }
+                    }
                     else if (serialBuffer[2] == '4') {
                         write(mainfd, "S14\r", 5);
                         if (strcmp(scaleBuffer, serialBuffer) != 0) {
-                            fp_scale = fopen("/scale", "a");
+                            fp_scale = fopen("/scale", "w");
                             fprintf(fp_scale, "%s\n", serialBuffer);
                             fclose(fp_scale);
                         }

@@ -2364,11 +2364,11 @@ function create_trans_dbs($db,$type){
 			end as linetoprint,
 		sequence,
 		department,
-		subdept_name as dept_name,
+		dept_name,
 		trans_type,
 		upc
 		from ltt_receipt_reorder_g r
-		left outer join ".$IS4C_LOCAL->get('pDatabase').".subdepts d on r.department=d.dept_ID
+		left outer join ".$IS4C_LOCAL->get('pDatabase').".departments d on r.department=d.dept_no
 		where r.total<>0 or r.unitprice=0
 		order by sequence";
 	if($type == 'mssql'){
