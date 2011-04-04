@@ -42,7 +42,6 @@ if (isset($_GET['action'])){
 		$dept = $_GET['dept'];
 		$price = rtrim($_GET['price'],' ');
 		$tax = $_GET['tax'];
-		$supplier = $_GET['supplier'];
 		$brand = $_GET['brand'];
 
 		$fs = $_GET['fs'];
@@ -93,11 +92,11 @@ if (isset($_GET['action'])){
 		$exists = "SELECT upc from prodExtra where products_id=$prod_id";
 		$results = $dbc->query($exists);
 		if ($dbc->num_rows($results) > 0) {
-			$up2Q = sprintf("UPDATE prodExtra SET distributor=%s, manufacturer=%s WHERE products_id=$prod_id",
-				$dbc->escape($supplier),$dbc->escape($brand));	
+			$up2Q = sprintf("UPDATE prodExtra SET manufacturer=%s WHERE products_id=$prod_id",
+				$dbc->escape($brand));	
 		}else {
-			$up2Q = sprintf("INSERT into prodExtra (upc, distributor, manufacturer, products_id) values (%s, %s, %s, $prod_id)",
-				$upc, $dbc->escape($supplier),$dbc->escape($brand));
+			$up2Q = sprintf("INSERT into prodExtra (upc, manufacturer, products_id) values (%s, %s, $prod_id)",
+				$upc, $dbc->escape($brand));
 		}
 		$dbc->query($up2Q);
 
@@ -257,9 +256,6 @@ function edit(upc){
 	select += "</select>";
 	document.getElementById(upc+'dept').innerHTML = select;
 	
-	var supplier = document.getElementById(upc+'supplier').innerHTML;
-	document.getElementById(upc+'supplier').innerHTML = "<input type=text id=\"f"+upc+"supplier\" size=4 value=\""+supplier+"\" />";
- 
         var brand = document.getElementById(upc+'brand').innerHTML;
         document.getElementById(upc+'brand').innerHTML = "<input type=text id=\"f"+upc+"brand\" size=4 value=\""+brand+"\" />";
 
@@ -311,7 +307,6 @@ function edit(upc){
 function save(upc){
 	var desc = document.getElementById('f'+upc+'desc').value;
 	var dept = document.getElementById('f'+upc+'dept').value.split('|');
-	var supplier = document.getElementById('f'+upc+'supplier').value;
 	var brand = document.getElementById('f'+upc+'brand').value;
 	var price = document.getElementById('f'+upc+'price').value;
 	var tax = document.getElementById('f'+upc+'tax').value;
@@ -321,7 +316,6 @@ function save(upc){
 	
 	document.getElementById(upc+'desc').innerHTML = desc;
 	document.getElementById(upc+'dept').innerHTML = dept[1];
-	document.getElementById(upc+'supplier').innerHTML = supplier;
 	document.getElementById(upc+'brand').innerHTML = brand;
 	document.getElementById(upc+'price').innerHTML = price;
 	
@@ -353,7 +347,7 @@ function save(upc){
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&supplier='+supplier+'&brand='+brand+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand+'&local='+loc);
 }
 
 function deleteCheck(upc,description){
@@ -578,11 +572,6 @@ function deleteCheck(upc,description){
 				echo "$otherdir>Dept</a></th>";
 			else
 				echo "asc>Dept</a></th>";	
-			echo "<th><a href=$urlbase&sort=x.distributor&dir=";
-			if ($order == 'x.distributor')
-				echo "$otherdir>Supplier</a></th>";
-			else
-				echo "desc>Supplier</a></th>";
 			echo "<th><a href=$urlbase&sort=x.manufacturer&dir=";
                        if ($order == 'x.manufacturer')
                                 echo "$otherdir>Brand</a></th>";
@@ -595,7 +584,7 @@ function deleteCheck(upc,description){
 				echo "desc>Price</a></th>";	
 		}
 		else
-			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Supplier</th><th>Brand</th><th>Price</th>";
+			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Brand</th><th>Price</th>";
 		echo "<th>Tax</th><th>FS</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
 		
 		/*
@@ -621,7 +610,6 @@ function deleteCheck(upc,description){
 				echo "<td align=center>$row[0]</td>";
 			echo "<td align=center id=$row[0]desc>$row[1]</td>";
 			echo "<td align=center id=$row[0]dept>$row[2]</td>";
-			echo "<td align=center id=$row[0]supplier>$row[9]</td>";
 			echo "<td align=center id=$row[0]brand>$row[10]</td>";
 			echo "<td align=center id=$row[0]price>$row[3]</td>";
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
