@@ -50,11 +50,6 @@ if (isset($_GET['action'])){
 			$fs = 1;
 		else
 			$fs = 0;
-		$disc = $_GET['disc'];
-		if ($disc == 'true')
-			$disc = 1;
-		else
-			$disc = 0;
 		$wgt = $_GET['wgt'];
 		if ($wgt == 'true')
 			$wgt = 1;
@@ -75,7 +70,6 @@ if (isset($_GET['action'])){
 				tax=$tax,		
 				foodstamp=$fs,		
 				scale=$wgt,		
-				discount=$disc,
 				local=$loc,
 				modified=".$dbc->now()."
 				where upc='$upc'";
@@ -86,7 +80,7 @@ if (isset($_GET['action'])){
 			$q = "INSERT INTO prodUpdate
 				SELECT upc,description,normal_price,
 				department,tax,foodstamp,scale,0,
-				modified,-1,qttyEnforced,discount,
+				modified,-1,qttyEnforced,
 				inUse FROM products WHERE upc='$upc'";
 			$dbc->query($q);
 		}
@@ -292,12 +286,6 @@ function edit(upc){
 	else
 		document.getElementById(upc+'fs').innerHTML = "<input type=checkbox id=\"f"+upc+"fs\" />";
 		
-	var disc = document.getElementById(upc+'disc').innerHTML;
-	if (disc == 'X')
-		document.getElementById(upc+'disc').innerHTML = "<input type=checkbox id=\"f"+upc+"disc\" checked />";
-	else
-		document.getElementById(upc+'disc').innerHTML = "<input type=checkbox id=\"f"+upc+"disc\" />";
-		
 	var wgt = document.getElementById(upc+'wgt').innerHTML;
 	if (wgt == 'X')
 		document.getElementById(upc+'wgt').innerHTML = "<input type=checkbox id=\"f"+upc+"wgt\" checked />";
@@ -328,7 +316,6 @@ function save(upc){
 	var price = document.getElementById('f'+upc+'price').value;
 	var tax = document.getElementById('f'+upc+'tax').value;
 	var fs = document.getElementById('f'+upc+'fs').checked;
-	var disc = document.getElementById('f'+upc+'disc').checked;
 	var wgt = document.getElementById('f'+upc+'wgt').checked;
 	var loc = document.getElementById('f'+upc+'local').checked;
 	
@@ -352,11 +339,6 @@ function save(upc){
 	else
 		document.getElementById(upc+'fs').innerHTML = '-';
 		
-	if (disc)
-		document.getElementById(upc+'disc').innerHTML = 'X';
-	else
-		document.getElementById(upc+'disc').innerHTML = '-';
-		
 	if (wgt)
 		document.getElementById(upc+'wgt').innerHTML = 'X';
 	else
@@ -371,7 +353,7 @@ function save(upc){
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&disc='+disc+'&wgt='+wgt+'&supplier='+supplier+'&brand='+brand+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&supplier='+supplier+'&brand='+brand+'&local='+loc);
 }
 
 function deleteCheck(upc,description){
@@ -614,7 +596,7 @@ function deleteCheck(upc,description){
 		}
 		else
 			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Supplier</th><th>Brand</th><th>Price</th>";
-		echo "<th>Tax</th><th>FS</th><th>Disc</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
+		echo "<th>Tax</th><th>FS</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
 		
 		/*
 		 * build the table with cells id'd so that javascript can see them
@@ -644,7 +626,6 @@ function deleteCheck(upc,description){
 			echo "<td align=center id=$row[0]price>$row[3]</td>";
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
 			echo "<td align=center id=$row[0]fs>$row[5]</td>";
-			echo "<td align=center id=$row[0]disc>$row[6]</td>";
 			echo "<td align=center id=$row[0]wgt>$row[7]</td>";
 			echo "<td align=center id=$row[0]local>$row[8]</td>";
 			if (!isset($_GET['excel']))
