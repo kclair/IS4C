@@ -62,6 +62,28 @@ function addSub(){
 	});
 }
 
+function editSub(){
+	var name = $('#editname').val();
+        var did = $('#deptselect').val();
+        var d = 'action=editSub&did='+did+'&name='+name;
+        $('#subselect option:selected').each(function(){
+                d += '&sid[]='+$(this).val();
+        });
+        $.ajax({
+                url: 'ajax.php',
+                type: 'POST',
+                dataType: 'text/html',
+                timeout: 1000,
+                data: d,
+                error: function(){
+                alert('Error loading XML document');
+                },
+                success: function(resp){
+                        $('#subselect').html(resp);
+                }
+        });
+}
+
 function deleteSub(){
 	var did = $('#deptselect').val();
 	var d = 'action=deleteSub&did='+did;
