@@ -43,6 +43,7 @@ if (isset($_GET['action'])){
 		$price = rtrim($_GET['price'],' ');
 		$tax = $_GET['tax'];
 		$supplier = $_GET['supplier'];
+		$brand = $_GET['brand'];
 
 		$fs = $_GET['fs'];
 		if ($fs == 'true')
@@ -90,8 +91,20 @@ if (isset($_GET['action'])){
 			$dbc->query($q);
 		}
 
-		$up2Q = sprintf("UPDATE prodExtra SET distributor=%s WHERE upc='%s'",
-				$dbc->escape($supplier),$upc);	
+		// add product to prodExtra if it doesn't exist there
+		$prodidq = "SELECT id from products where upc='$upc'";
+		$results = $dbc->query($prodidq);
+		$row = $dbc->fetch_array($results);
+		$prod_id = $row[0];
+		$exists = "SELECT upc from prodExtra where products_id=$prod_id";
+		$results = $dbc->query($exists);
+		if ($dbc->num_rows($results) > 0) {
+			$up2Q = sprintf("UPDATE prodExtra SET distributor=%s, manufacturer=%s WHERE products_id=$prod_id",
+				$dbc->escape($supplier),$dbc->escape($brand));	
+		}else {
+			$up2Q = sprintf("INSERT into prodExtra (upc, distributor, manufacturer, products_id) values (%s, %s, %s, $prod_id)",
+				$upc, $dbc->escape($supplier),$dbc->escape($brand));
+		}
 		$dbc->query($up2Q);
 
 		//updateProductAllLanes($upc);
@@ -252,6 +265,9 @@ function edit(upc){
 	
 	var supplier = document.getElementById(upc+'supplier').innerHTML;
 	document.getElementById(upc+'supplier').innerHTML = "<input type=text id=\"f"+upc+"supplier\" size=4 value=\""+supplier+"\" />";
+ 
+        var brand = document.getElementById(upc+'brand').innerHTML;
+        document.getElementById(upc+'brand').innerHTML = "<input type=text id=\"f"+upc+"brand\" size=4 value=\""+brand+"\" />";
 
 	var price = document.getElementById(upc+'price').innerHTML;
 	document.getElementById(upc+'price').innerHTML = "<input type=text id=\"f"+upc+"price\" size=4 value=\""+price+"\" />";
@@ -308,6 +324,7 @@ function save(upc){
 	var desc = document.getElementById('f'+upc+'desc').value;
 	var dept = document.getElementById('f'+upc+'dept').value.split('|');
 	var supplier = document.getElementById('f'+upc+'supplier').value;
+	var brand = document.getElementById('f'+upc+'brand').value;
 	var price = document.getElementById('f'+upc+'price').value;
 	var tax = document.getElementById('f'+upc+'tax').value;
 	var fs = document.getElementById('f'+upc+'fs').checked;
@@ -318,6 +335,7 @@ function save(upc){
 	document.getElementById(upc+'desc').innerHTML = desc;
 	document.getElementById(upc+'dept').innerHTML = dept[1];
 	document.getElementById(upc+'supplier').innerHTML = supplier;
+	document.getElementById(upc+'brand').innerHTML = brand;
 	document.getElementById(upc+'price').innerHTML = price;
 	
 	if (tax == "0")
@@ -353,7 +371,7 @@ function save(upc){
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&disc='+disc+'&wgt='+wgt+'&supplier='+supplier+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&disc='+disc+'&wgt='+wgt+'&supplier='+supplier+'&brand='+brand+'&local='+loc);
 }
 
 function deleteCheck(upc,description){
@@ -480,7 +498,7 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer 
                         FROM products as i LEFT JOIN departments as d ON i.department = d.dept_no
 			LEFT JOIN taxrates AS t ON t.id = i.tax
 			LEFT JOIN prodExtra as x on i.upc = x.upc
@@ -495,7 +513,7 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer 
                         FROM products as i LEFT JOIN superdepts as s ON i.department = s.dept_ID
 			LEFT JOIN taxrates AS t ON t.id = i.tax
 			LEFT JOIN departments as d on i.department = d.dept_no
@@ -512,7 +530,7 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer 
                         FROM products as i LEFT JOIN departments as d ON i.department = d.dept_no
 			LEFT JOIN prodExtra as x on i.upc = x.upc
 			LEFT JOIN taxrates AS t ON t.id = i.tax
@@ -582,7 +600,12 @@ function deleteCheck(upc,description){
 			if ($order == 'x.distributor')
 				echo "$otherdir>Supplier</a></th>";
 			else
-				echo "desc>Supplier</a></th>";	
+				echo "desc>Supplier</a></th>";
+			echo "<th><a href=$urlbase&sort=x.manufacturer&dir=";
+                       if ($order == 'x.manufacturer')
+                                echo "$otherdir>Brand</a></th>";
+                        else
+                                echo "desc>Brand</a></th>";
 			echo "<th><a href=$urlbase&sort=normal_price&dir=";
 			if ($order == 'normal_price')
 				echo "$otherdir>Price</a></th>";
@@ -590,7 +613,7 @@ function deleteCheck(upc,description){
 				echo "desc>Price</a></th>";	
 		}
 		else
-			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Supplier</th><th>Price</th>";
+			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Supplier</th><th>Brand</th><th>Price</th>";
 		echo "<th>Tax</th><th>FS</th><th>Disc</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
 		
 		/*
@@ -617,6 +640,7 @@ function deleteCheck(upc,description){
 			echo "<td align=center id=$row[0]desc>$row[1]</td>";
 			echo "<td align=center id=$row[0]dept>$row[2]</td>";
 			echo "<td align=center id=$row[0]supplier>$row[9]</td>";
+			echo "<td align=center id=$row[0]brand>$row[10]</td>";
 			echo "<td align=center id=$row[0]price>$row[3]</td>";
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
 			echo "<td align=center id=$row[0]fs>$row[5]</td>";
