@@ -34,8 +34,8 @@ $CREATE['op.accounts'] = "
           `max_balance` double NOT NULL default '0',
 	  `account_flags` varchar(255) NULL,
 	  `account_flags_html` varchar(255) NULL,
-	  PRIMARY KEY  (`name`),
-	  KEY `CardNo` (`id`)
+	  PRIMARY KEY  (`CardNo`),
+	  KEY `name` (`name`)
 	)
 ";
 
