@@ -42,18 +42,13 @@ if (isset($_GET['action'])){
 		$dept = $_GET['dept'];
 		$price = rtrim($_GET['price'],' ');
 		$tax = $_GET['tax'];
-		$supplier = $_GET['supplier'];
+		$brand = $_GET['brand'];
 
 		$fs = $_GET['fs'];
 		if ($fs == 'true')
 			$fs = 1;
 		else
 			$fs = 0;
-		$disc = $_GET['disc'];
-		if ($disc == 'true')
-			$disc = 1;
-		else
-			$disc = 0;
 		$wgt = $_GET['wgt'];
 		if ($wgt == 'true')
 			$wgt = 1;
@@ -65,6 +60,7 @@ if (isset($_GET['action'])){
 			$loc = 1;
 		else
 			$loc = 0;
+		$desc = str_replace("'", "\'", $desc);
 
 		$upQ = "update products set
 				description='$desc',
@@ -73,7 +69,6 @@ if (isset($_GET['action'])){
 				tax=$tax,		
 				foodstamp=$fs,		
 				scale=$wgt,		
-				discount=$disc,
 				local=$loc,
 				modified=".$dbc->now()."
 				where upc='$upc'";
@@ -84,16 +79,28 @@ if (isset($_GET['action'])){
 			$q = "INSERT INTO prodUpdate
 				SELECT upc,description,normal_price,
 				department,tax,foodstamp,scale,0,
-				modified,-1,qttyEnforced,discount,
+				modified,-1,qttyEnforced,
 				inUse FROM products WHERE upc='$upc'";
 			$dbc->query($q);
 		}
 
-		$up2Q = sprintf("UPDATE prodExtra SET distributor=%s WHERE upc='%s'",
-				$dbc->escape($supplier),$upc);	
+		// add product to prodExtra if it doesn't exist there
+		$prodidq = "SELECT id from products where upc='$upc'";
+		$results = $dbc->query($prodidq);
+		$row = $dbc->fetch_array($results);
+		$prod_id = $row[0];
+		$exists = "SELECT upc from prodExtra where products_id=$prod_id";
+		$results = $dbc->query($exists);
+		if ($dbc->num_rows($results) > 0) {
+			$up2Q = sprintf("UPDATE prodExtra SET manufacturer=%s WHERE products_id=$prod_id",
+				$dbc->escape($brand));	
+		}else {
+			$up2Q = sprintf("INSERT into prodExtra (upc, manufacturer, products_id) values (%s, %s, $prod_id)",
+				$upc, $dbc->escape($brand));
+		}
 		$dbc->query($up2Q);
 
-		updateProductAllLanes($upc);
+		//updateProductAllLanes($upc);
 		break;
 	case 'deleteCheck':
 		$upc = $_GET['upc'];
@@ -129,7 +136,7 @@ if (isset($_GET['action'])){
 		$delXQ = "delete from prodExtra where upc='$upc'";
 		$delXR = $dbc->query($delXQ);
 
-		deleteProductAllLanes($upc);
+		//deleteProductAllLanes($upc);
 		break;
 	}
 	
@@ -249,8 +256,8 @@ function edit(upc){
 	select += "</select>";
 	document.getElementById(upc+'dept').innerHTML = select;
 	
-	var supplier = document.getElementById(upc+'supplier').innerHTML;
-	document.getElementById(upc+'supplier').innerHTML = "<input type=text id=\"f"+upc+"supplier\" size=4 value=\""+supplier+"\" />";
+        var brand = document.getElementById(upc+'brand').innerHTML;
+        document.getElementById(upc+'brand').innerHTML = "<input type=text id=\"f"+upc+"brand\" size=4 value=\""+brand+"\" />";
 
 	var price = document.getElementById(upc+'price').innerHTML;
 	document.getElementById(upc+'price').innerHTML = "<input type=text id=\"f"+upc+"price\" size=4 value=\""+price+"\" />";
@@ -259,14 +266,14 @@ function edit(upc){
 	var sel_str = "<select id=\"f"+upc+"tax\">";
 	var taxrates = document.getElementById('taxrates').value.split(':');
 	var taxnames = document.getElementById('taxnames').value.split(':');
-	if (tax == 'X') sel_str += "<option value=1 selected>Regular</option>";
-	else sel_str += "<option value=1>Regular</option>";
+        if (tax == '-') sel_str += "<option value=0 selected>No Tax</option>";
+        else sel_str += "<option value=0>No Tax</option>";
+	if (tax == 'X') sel_str += "<option value=1 selected>Tax</option>";
+	else sel_str += "<option value=1>Tax</option>";
 	for (var i=2; i<taxrates.length; i++){
 		if (tax == taxnames[i].charAt(0)) sel_str += "<option value="+taxrates[i]+" selected>"+taxnames[i]+"</option>";
 		else sel_str += "<option value=2>Deli</option>";
 	}
-	if (tax == '-') sel_str += "<option value=0 selected>No Tax</option>";
-	else sel_str += "<option value=0>No Tax</option>";
 	document.getElementById(upc+'tax').innerHTML = sel_str;
 		
 	var fs = document.getElementById(upc+'fs').innerHTML;
@@ -274,12 +281,6 @@ function edit(upc){
 		document.getElementById(upc+'fs').innerHTML = "<input type=checkbox id=\"f"+upc+"fs\" checked />";
 	else
 		document.getElementById(upc+'fs').innerHTML = "<input type=checkbox id=\"f"+upc+"fs\" />";
-		
-	var disc = document.getElementById(upc+'disc').innerHTML;
-	if (disc == 'X')
-		document.getElementById(upc+'disc').innerHTML = "<input type=checkbox id=\"f"+upc+"disc\" checked />";
-	else
-		document.getElementById(upc+'disc').innerHTML = "<input type=checkbox id=\"f"+upc+"disc\" />";
 		
 	var wgt = document.getElementById(upc+'wgt').innerHTML;
 	if (wgt == 'X')
@@ -306,17 +307,16 @@ function edit(upc){
 function save(upc){
 	var desc = document.getElementById('f'+upc+'desc').value;
 	var dept = document.getElementById('f'+upc+'dept').value.split('|');
-	var supplier = document.getElementById('f'+upc+'supplier').value;
+	var brand = document.getElementById('f'+upc+'brand').value;
 	var price = document.getElementById('f'+upc+'price').value;
 	var tax = document.getElementById('f'+upc+'tax').value;
 	var fs = document.getElementById('f'+upc+'fs').checked;
-	var disc = document.getElementById('f'+upc+'disc').checked;
 	var wgt = document.getElementById('f'+upc+'wgt').checked;
 	var loc = document.getElementById('f'+upc+'local').checked;
 	
 	document.getElementById(upc+'desc').innerHTML = desc;
 	document.getElementById(upc+'dept').innerHTML = dept[1];
-	document.getElementById(upc+'supplier').innerHTML = supplier;
+	document.getElementById(upc+'brand').innerHTML = brand;
 	document.getElementById(upc+'price').innerHTML = price;
 	
 	if (tax == "0")
@@ -333,11 +333,6 @@ function save(upc){
 	else
 		document.getElementById(upc+'fs').innerHTML = '-';
 		
-	if (disc)
-		document.getElementById(upc+'disc').innerHTML = 'X';
-	else
-		document.getElementById(upc+'disc').innerHTML = '-';
-		
 	if (wgt)
 		document.getElementById(upc+'wgt').innerHTML = 'X';
 	else
@@ -352,7 +347,7 @@ function save(upc){
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&disc='+disc+'&wgt='+wgt+'&supplier='+supplier+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand+'&local='+loc);
 }
 
 function deleteCheck(upc,description){
@@ -479,10 +474,11 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer, s.subdept_name as subdept 
                         FROM products as i LEFT JOIN departments as d ON i.department = d.dept_no
 			LEFT JOIN taxrates AS t ON t.id = i.tax
-			LEFT JOIN prodExtra as x on i.upc = x.upc
+			LEFT JOIN prodExtra as x on i.upc = x.upc 
+			LEFT JOIN subdepts as s on i.subdept = s.subdept_no 
                         WHERE i.department BETWEEN $deptStart AND $deptEnd 
                         ORDER BY $order $dir";
 			//ORDER BY i.$order,i.UPC";
@@ -494,7 +490,7 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer 
                         FROM products as i LEFT JOIN superdepts as s ON i.department = s.dept_ID
 			LEFT JOIN taxrates AS t ON t.id = i.tax
 			LEFT JOIN departments as d on i.department = d.dept_no
@@ -511,7 +507,7 @@ function deleteCheck(upc,description){
                         (CASE WHEN i.discount = 0 THEN '-' ELSE 'X'END) as DISC,
                         (CASE WHEN i.scale = 1 THEN 'X' ELSE '-' END) as WGHd,
                         (CASE WHEN i.local = 1 THEN 'X' ELSE '-' END) as local,
-			x.distributor
+			x.distributor, x.manufacturer 
                         FROM products as i LEFT JOIN departments as d ON i.department = d.dept_no
 			LEFT JOIN prodExtra as x on i.upc = x.upc
 			LEFT JOIN taxrates AS t ON t.id = i.tax
@@ -577,11 +573,17 @@ function deleteCheck(upc,description){
 				echo "$otherdir>Dept</a></th>";
 			else
 				echo "asc>Dept</a></th>";	
-			echo "<th><a href=$urlbase&sort=x.distributor&dir=";
-			if ($order == 'x.distributor')
-				echo "$otherdir>Supplier</a></th>";
-			else
-				echo "desc>Supplier</a></th>";	
+                        echo "<th><a href=$urlbase&sort=subdept_name&dir=";
+                        if ($order == 'subdept_name')
+                                echo "$otherdir>SubDept</a></th>";
+                        else
+                                echo "asc>SubDept</a></th>";
+
+			echo "<th><a href=$urlbase&sort=x.manufacturer&dir=";
+                       if ($order == 'x.manufacturer')
+                                echo "$otherdir>Brand</a></th>";
+                        else
+                                echo "desc>Brand</a></th>";
 			echo "<th><a href=$urlbase&sort=normal_price&dir=";
 			if ($order == 'normal_price')
 				echo "$otherdir>Price</a></th>";
@@ -589,8 +591,8 @@ function deleteCheck(upc,description){
 				echo "desc>Price</a></th>";	
 		}
 		else
-			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>Supplier</th><th>Price</th>";
-		echo "<th>Tax</th><th>FS</th><th>Disc</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
+			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>SubDept><th>Brand</th><th>Price</th>";
+		echo "<th>Tax</th><th>FS</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
 		
 		/*
 		 * build the table with cells id'd so that javascript can see them
@@ -615,11 +617,11 @@ function deleteCheck(upc,description){
 				echo "<td align=center>$row[0]</td>";
 			echo "<td align=center id=$row[0]desc>$row[1]</td>";
 			echo "<td align=center id=$row[0]dept>$row[2]</td>";
-			echo "<td align=center id=$row[0]supplier>$row[9]</td>";
+			echo "<td align=center id=$row[0]subdept>$row[11]</td>";
+			echo "<td align=center id=$row[0]brand>$row[10]</td>";
 			echo "<td align=center id=$row[0]price>$row[3]</td>";
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
 			echo "<td align=center id=$row[0]fs>$row[5]</td>";
-			echo "<td align=center id=$row[0]disc>$row[6]</td>";
 			echo "<td align=center id=$row[0]wgt>$row[7]</td>";
 			echo "<td align=center id=$row[0]local>$row[8]</td>";
 			if (!isset($_GET['excel']))

@@ -49,6 +49,10 @@ if (isset($_REQUEST['action'])){
 		deleteSub($_REQUEST['sid']);
 		showSubs($_REQUEST['did']);
 		break;
+	case 'editSub':
+		editSub($_REQUEST['name'], $_REQUEST['sid']);
+		showSubs($_REQUEST['did']);
+		break;
 	case 'showSubsForDept':
 		showSubs($_REQUEST['did']);
 		break;
@@ -71,9 +75,15 @@ function addSub($name,$did){
 		if (is_numeric($tmp)) $sid = $tmp+1;
 	}
 
-	$insQ = sprintf("INSERT INTO subdepts VALUES (%d,'%s',%d)",
+	$insQ = sprintf("INSERT INTO subdepts (subdept_no, subdept_name, dept_ID) VALUES (%d,%s,%d)",
 			$sid,$dbc->escape($name),$did);
 	$dbc->query($insQ);
+}
+
+function editSub($name, $sid) {
+	global $dbc;
+	$id = $sid[0];
+	$res = $dbc->query(sprintf("UPDATE subdepts SET subdept_name=%s WHERE subdept_no=%d", $dbc->escape($name), $id));
 }
 
 function showSubs($did){

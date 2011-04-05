@@ -60,6 +60,8 @@ Choose a department: <select id=deptselect onchange="showSubsForDept(this.value)
 <input type=submit value=Add onclick="addSub(); return false;" />
 <p />
 <input type=submit value="Delete Selected" onclick="deleteSub(); return false;" />
+<p />
+<input type=submit value="Change Name to:" onclick="editSub(); return false;" /> <input type=text size=7 id=editname name=editname>
 </div>
 </div>
 <script type="text/javascript">
