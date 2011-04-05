@@ -56,11 +56,6 @@ if (isset($_GET['action'])){
 		else
 			$wgt = 0;
 
-		$loc = $_GET['local'];
-		if ($loc == 'true')
-			$loc = 1;
-		else
-			$loc = 0;
 		$desc = str_replace("'", "\'", $desc);
 
 		$upQ = "update products set
@@ -71,7 +66,6 @@ if (isset($_GET['action'])){
 				tax=$tax,		
 				foodstamp=$fs,		
 				scale=$wgt,		
-				local=$loc,
 				modified=".$dbc->now()."
 				where upc='$upc'";
 		//$ret .= $upQ;
@@ -171,7 +165,7 @@ while ($subdeptW = $dbc->fetch_array($subdeptR)){
 
 $subdepts = substr($subdepts,0,strlen($subdepts)-1);
 $subdept_nos = substr($subdept_nos,0,strlen($subdept_nos)-1);
-//$subdept_dept_ids = substr($subdept_dept_ids,0,strlen($subdept_dept_ids)-1);
+$subdept_dept_ids = substr($subdept_dept_ids,0,strlen($subdept_dept_ids)-1);
 
 if (!isset($_GET['excel'])){
 //include($FANNIE_ROOT.'src/header.html');
@@ -326,12 +320,6 @@ function edit(upc){
 	else
 		document.getElementById(upc+'wgt').innerHTML = "<input type=checkbox id=\"f"+upc+"wgt\" />";
 
-	var loc = document.getElementById(upc+'local').innerHTML;
-	if (loc == 'X')
-		document.getElementById(upc+'local').innerHTML = "<input type=checkbox id=\"f"+upc+"local\" checked />";
-	else
-		document.getElementById(upc+'local').innerHTML = "<input type=checkbox id=\"f"+upc+"local\" />";
-		
 	var lnk = "<img src=\"<?php echo $FANNIE_URL;?>src/img/buttons/b_save.png\" alt=\"Save\" border=0 />";
 	document.getElementById(upc+'cmd').innerHTML = "<a href=\"\" onclick=\"save('"+upc+"'); return false;\">"+lnk+"</a>";
 }
@@ -351,7 +339,6 @@ function save(upc){
 	var tax = document.getElementById('f'+upc+'tax').value;
 	var fs = document.getElementById('f'+upc+'fs').checked;
 	var wgt = document.getElementById('f'+upc+'wgt').checked;
-	var loc = document.getElementById('f'+upc+'local').checked;
 	
 	document.getElementById(upc+'desc').innerHTML = desc;
 	document.getElementById(upc+'dept').innerHTML = dept[1];
@@ -378,16 +365,11 @@ function save(upc){
 	else
 		document.getElementById(upc+'wgt').innerHTML = '-';
 
-	if (loc)
-		document.getElementById(upc+'local').innerHTML = 'X';
-	else
-		document.getElementById(upc+'local').innerHTML = '-';
-	
 	var lnk = "<img src=\"<?php echo $FANNIE_URL;?>src/img/buttons/b_edit.png\" alt=\"Edit\" border=0 />";
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&subdept='+subdept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&subdept='+subdept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand);
 }
 
 function deleteCheck(upc,description){
@@ -632,7 +614,7 @@ function deleteCheck(upc,description){
 		}
 		else
 			echo "<th>UPC</th><th>Description</th><th>Dept</th><th>SubDept><th>Brand</th><th>Price</th>";
-		echo "<th>Tax</th><th>FS</th><th>Wg'd</th><th>Local</th><th>&nbsp;</th></tr>";
+		echo "<th>Tx</th><th>FS</th><th>W'd</th><th>&nbsp;</th></tr>";
 		
 		/*
 		 * build the table with cells id'd so that javascript can see them
@@ -663,7 +645,6 @@ function deleteCheck(upc,description){
 			echo "<td align=center id=$row[0]tax>$row[4]</td>";
 			echo "<td align=center id=$row[0]fs>$row[5]</td>";
 			echo "<td align=center id=$row[0]wgt>$row[7]</td>";
-			echo "<td align=center id=$row[0]local>$row[8]</td>";
 			if (!isset($_GET['excel']))
 				echo "<td align=center id=$row[0]cmd><a href=\"\" onclick=\"edit('$row[0]'); return false;\"><img src=\"{$FANNIE_URL}src/img/buttons/b_edit.png\" alt=\"Edit\" border=0 /></a></td>";
 			echo "</tr>\n";
