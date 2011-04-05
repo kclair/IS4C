@@ -26,12 +26,14 @@ All of the above info, except Cardo, should match MESS at all times.
 */
 $CREATE['op.accounts'] = "
 	CREATE TABLE `accounts` (
-	  `id` int(8) NOT NULL,
           `CardNo` int(8) NOT NULL,
           `name` varchar(255) NOT NULL,
+	  `status` varchar(128) NOT NULL,
 	  `balance` double NOT NULL default '0',
 	  `discount` smallint(6) default NULL,
           `max_balance` double NOT NULL default '0',
+	  `account_flags` varchar(255) NULL,
+	  `account_flags_html` varchar(255) NULL,
 	  PRIMARY KEY  (`name`),
 	  KEY `CardNo` (`id`)
 	)
