@@ -42,6 +42,12 @@ function clearMember(){
 
 function memberID($member_number) {
 	global $IS4C_LOCAL,$IS4C_PATH;
+        $sync_account_out = array();
+        $res = '';
+	exec($IS4C_PATH."/exec/get_account_info.rb $member_number", &$sync_account_out, &$res);
+	if ($res == 0) {
+	  // throw some warning
+	}
 	$query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
                 accounts.balance as Balance,accounts.discount as Discount, accounts.name, accounts.max_balance, 
 		custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
