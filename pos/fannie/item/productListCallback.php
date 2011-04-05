@@ -40,6 +40,7 @@ if (isset($_GET['action'])){
 		$upc = $_GET['upc'];
 		$desc = $_GET['desc'];
 		$dept = $_GET['dept'];
+		$subdept = $_GET['subdept'];
 		$price = rtrim($_GET['price'],' ');
 		$tax = $_GET['tax'];
 		$brand = $_GET['brand'];
@@ -65,6 +66,7 @@ if (isset($_GET['action'])){
 		$upQ = "update products set
 				description='$desc',
 				department=$dept,		
+				subdept=$subdept,
 				normal_price=$price,
 				tax=$tax,		
 				foodstamp=$fs,		
@@ -157,6 +159,20 @@ while ($deptW = $dbc->fetch_array($deptR)){
 $depts = substr($depts,0,strlen($depts)-1);
 $dept_nos = substr($dept_nos,0,strlen($dept_nos)-1);
 
+$subdeptQ = "select subdepts.subdept_no, subdepts.subdept_name, departments.dept_name, subdepts.dept_ID from subdepts, departments where subdepts.dept_ID=departments.dept_no order by subdepts.dept_ID";
+$subdeptR = $dbc->query($subdeptQ);
+$subdepts = "";
+$subdept_nos = "";
+$subdept_dept_ids = "";
+while ($subdeptW = $dbc->fetch_array($subdeptR)){
+        $subdepts .= $subdeptW[1]."|";
+        $subdept_nos .= $subdeptW[0]."|";
+	$subdept_dept_ids .= $subdeptW[3]."|"; }
+
+$subdepts = substr($subdepts,0,strlen($subdepts)-1);
+$subdept_nos = substr($subdept_nos,0,strlen($subdept_nos)-1);
+//$subdept_dept_ids = substr($subdept_dept_ids,0,strlen($subdept_dept_ids)-1);
+
 if (!isset($_GET['excel'])){
 //include($FANNIE_ROOT.'src/header.html');
 ?>
@@ -233,6 +249,12 @@ var depts = '<?php echo $depts; ?>';
 var select_list = depts.split('|');
 var select_values = dept_nos.split('|');
 
+var subdept_nos = '<?php echo $subdept_nos; ?>';
+var subdepts = '<?php echo $subdepts; ?>';
+var subdept_dept_ids = '<?php echo $subdept_dept_ids; ?>';
+var subselect_list = subdepts.split('|');
+var subselect_values = subdept_nos.split('|');
+var subselect_dept_ids = subdept_dept_ids.split("|");
 /*
 	change the specified row to inputs
 	by convention, all table cells in a row are given 
@@ -240,13 +262,27 @@ var select_values = dept_nos.split('|');
 	similarly, all inputs are given ids prefixed
 	'f'+upc (f for form I guess)
 */
+
+function updateSubdepts(dept, upc) {
+  var subdept = document.getElementById(upc+'subdept');
+  var dept_id = dept.split("|")[0];
+  var subselect = "<select id=\"f"+upc+"subdept\">";
+  for (var i=0; i < subselect_list.length; i++) {
+    if (subselect_dept_ids[i] == dept_id) {
+      subselect += "<option value='"+subselect_values[i]+"|"+subselect_list[i]+"'>"+subselect_list[i]+"</option>";
+    }
+  }  
+  subselect += "</select>";
+  subdept.innerHTML = subselect; 
+}
+
 function edit(upc){
 	var desc = document.getElementById(upc+'desc').innerHTML;
 	var content = "<input type=text id=\"f"+upc+"desc\" value=\""+desc+"\" />";
 	document.getElementById(upc+'desc').innerHTML = content;
 	
 	var dept = document.getElementById(upc+'dept').innerHTML;
-	var select = "<select id=\"f"+upc+"dept\">";
+	var select = "<select id=\"f"+upc+"dept\" onchange='updateSubdepts(this.value, \""+upc+"\")' >";
 	for (var i = 0; i < select_list.length; i++){
 		select += "<option value=\""+select_values[i]+"|"+select_list[i]+"\"";
 		if (select_list[i] == dept)
@@ -255,7 +291,9 @@ function edit(upc){
 	}
 	select += "</select>";
 	document.getElementById(upc+'dept').innerHTML = select;
-	
+
+        updateSubdepts(document.getElementById('f'+upc+'dept').value, upc); 
+
         var brand = document.getElementById(upc+'brand').innerHTML;
         document.getElementById(upc+'brand').innerHTML = "<input type=text id=\"f"+upc+"brand\" size=4 value=\""+brand+"\" />";
 
@@ -307,6 +345,7 @@ function edit(upc){
 function save(upc){
 	var desc = document.getElementById('f'+upc+'desc').value;
 	var dept = document.getElementById('f'+upc+'dept').value.split('|');
+ 	var subdept = document.getElementById('f'+upc+'subdept').value.split('|');
 	var brand = document.getElementById('f'+upc+'brand').value;
 	var price = document.getElementById('f'+upc+'price').value;
 	var tax = document.getElementById('f'+upc+'tax').value;
@@ -316,6 +355,7 @@ function save(upc){
 	
 	document.getElementById(upc+'desc').innerHTML = desc;
 	document.getElementById(upc+'dept').innerHTML = dept[1];
+	document.getElementById(upc+'subdept').innerHTML = subdept[1];
 	document.getElementById(upc+'brand').innerHTML = brand;
 	document.getElementById(upc+'price').innerHTML = price;
 	
@@ -347,7 +387,7 @@ function save(upc){
 	var cmd = "<a href=\"\" onclick=\"edit('"+upc+"'); return false;\">"+lnk+"</a>";
 	document.getElementById(upc+'cmd').innerHTML = cmd;
 	
-	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand+'&local='+loc);
+	phpSend('update&upc='+upc+'&desc='+desc+'&dept='+dept[0]+'&subdept='+subdept[0]+'&price='+price+'&tax='+tax+'&fs='+fs+'&wgt='+wgt+'&brand='+brand+'&local='+loc);
 }
 
 function deleteCheck(upc,description){
