@@ -95,6 +95,10 @@ elseif ($auditedUser){
 $dbc->smart_update('products',$up_array,"upc='$upc'");
 
 if ($dbc->table_exists('prodExtra')){
+        $checkP = $dbc->query("SELECT id from products where upc='$upc'");
+        $result = $dbc->fetch_array($checkP);
+        $id = $result[0];
+
 	$arr = array();
 	$arr['manufacturer'] = $dbc->escape($_REQUEST['manufacturer']);
 	$arr['distributor'] = $dbc->escape($_REQUEST['distributor']);
@@ -110,6 +114,7 @@ if ($dbc->table_exists('prodExtra')){
 		$arr['case_quantity'] = "''";
 		$arr['case_cost'] = 0.00;
 		$arr['case_info'] = "''";
+		$arr['products_id'] = $id;
 		$dbc->smart_insert('prodExtra',$arr);
 	}
 	else {
