@@ -406,9 +406,8 @@ function create_op_dbs($db,$type){
           `max_balance` double NOT NULL default 0.00,
 	  `account_flags varchar(255)`,
 	  `account_flags_html varchar(255)`, 
-          PRIMARY KEY  (`name`),
-          KEY `CardNo` (`CardNo`),
-          KEY `id` (`id`)
+          PRIMARY KEY  (`CardNo`),
+          KEY `name` (`name`)
         )";
         if (!$db->table_exists("accounts", $name)) {
           $db->query($accountsQ, $name);
