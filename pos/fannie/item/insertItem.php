@@ -131,6 +131,10 @@ if (isset($_REQUEST['likeCode']) && $_REQUEST['likeCode'] != -1){
 $resultI = $dbc->smart_insert('products',$ins_array);
 
 if ($dbc->table_exists('prodExtra')){
+	$prodidq = sprintf("SELECT id from products where upc=%s", $dbc->escape($upc));
+	$results = $dbc->query($prodidq);
+	$row = $dbc->fetch_array($results);
+	$prod_id = $row[0];
 	$pxarray = array(
 	'upc' => $dbc->escape($upc),
 	'distributor' => $dbc->escape($_REQUEST['distributor']),
@@ -141,7 +145,8 @@ if ($dbc->table_exists('prodExtra')){
 	'location' => $dbc->escape($_REQUEST['location']),
 	'case_quantity' => "''",
 	'case_cost' => 0.00,
-	'case_info' => "''"
+	'case_info' => "''",
+	'products_id' => $prod_id
 	);
 	$dbc->query("DELETE FROM prodExtra WHERE upc='$upc'");
 	$dbc->smart_insert('prodExtra',$pxarray);
