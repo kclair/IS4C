@@ -364,7 +364,7 @@ function create_op_dbs($db,$type){
 	  `memCoupons` int(11) NOT NULL default '1',
 	  `blueLine` varchar(50) default NULL,
 	  `Shown` tinyint(4) NOT NULL default '1',
-	  `id` int(11) NOT NULL auto_increment,
+	  `id` int(11) NOT NULL UNIQUE,
 	  PRIMARY KEY  (`id`),
 	  KEY `CardNo` (`CardNo`),
 	  KEY `LastName` (`LastName`)

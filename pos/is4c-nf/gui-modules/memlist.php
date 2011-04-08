@@ -70,8 +70,13 @@ class memlist extends NoInputPage {
 		$memberID = $entered;
 		$db_a = pDataConnect();
 
-                $query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
-                          where name LIKE '".$entered."%'order by name";
+		if (isset($_REQUEST['search'])) {
+                	$query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
+                          where name = '".$entered."'";
+		}else {
+                        $query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
+                          where name LIKE '".$entered."%' order by name";
+		}
 
 		$result = $db_a->query($query);
 		$num_rows = $db_a->num_rows($result);
@@ -81,15 +86,20 @@ class memlist extends NoInputPage {
 		if ($num_rows == 1) {
                         //once we have one result, do the real query
 			$row = $db_a->fetch_array($result);
+
+		        $sync_account_out = array();
+		        $res = '';
+			$exec = $IS4C_PATH."/exec/get_account_info.rb ".$row["CardNo"];
+		        exec($exec, &$sync_account_out, &$res);
                 $query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
-                accounts.balance as Balance,accounts.discount as Discount, accounts.name,
+                accounts.balance as Balance,accounts.max_balance, accounts.discount as Discount, accounts.name, accounts.account_flags, 
                 custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
                 custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
                 from custdata, accounts
-                where custdata.account_id = accounts.id and custdata.CardNo = '".$row["CardNo"]."'";
+                where custdata.CardNo = accounts.CardNo and custdata.CardNo = '".$row["CardNo"]."'";
                         $result = $db_a->query($query);
 			$row = $db_a->fetch_array($result);
-			setMember($row["CardNo"], $personNum,$row);
+			setMember($row["CardNo"], $personNum,$row,$res);
 			$IS4C_LOCAL->set("scan","scan");
 			header("Location: {$IS4C_PATH}gui-modules/pos2.php");
 			return False;
@@ -146,19 +156,28 @@ class memlist extends NoInputPage {
 		/* for no results, just throw up a re-do
 		 * otherwise, put results in a select box
 		 */
-		if ($num_rows < 1){
-			echo "
-			<div class=\"colored centeredDisplay\">
-				<span class=\"larger\">
-				no match found<br />next search or member number
-				</span>
-				<input type=\"text\" name=\"search\" size=\"15\"
-			       	onblur=\"\$('#search').focus();\" id=\"search\" />
-				<br />
-				press [enter] to cancel
-			</div>";
-		}
-		else {
+?>
+		<div class="colored centeredDisplay">
+			<span class="larger">
+			Enter Account name:
+			</span>
+			<input type="text" id="account-name" name="account-name" class="autocomplete" autocomplete="off" /> 
+			<br />
+			press [enter] to cancel
+		</div>
+		<script type="text/javascript">
+		<!--
+		$(function()  {
+		  $('input[name=account-name]').autoComplete({
+			ajax: '/ajax-callbacks/ajax-autocomplete.php', 
+			onSelect: function(event, ui) { window.location = '/gui-modules/memlist.php?search='+ui.data; } });
+		});
+		-->
+		</script>
+
+<?php
+/*
+
 			echo "<div class=\"listbox\">"
 				."<select name=\"search\" size=\"15\" "
 				."onblur=\"\$('#search').focus()\" id=\"search\">";
@@ -170,7 +189,6 @@ class memlist extends NoInputPage {
 					."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Customer";
 				$selectFlag = 1;
 			}
-                        */
 
 			for ($i = 0; $i < $num_rows; $i++) {
 				$row = $db->fetch_array($result);
@@ -188,6 +206,7 @@ class memlist extends NoInputPage {
 				."<div class=\"clear\"></div>";
 		}
 		echo "</form></div>";
+                        */
 	} // END body_content() FUNCTION
 }
 
