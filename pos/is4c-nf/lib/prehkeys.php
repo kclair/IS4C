@@ -43,17 +43,19 @@ function clearMember(){
 function memberID($member_number) {
 	global $IS4C_LOCAL,$IS4C_PATH;
         $sync_account_out = array();
+/*
         $res = '';
 	exec($IS4C_PATH."/exec/get_account_info.rb $member_number", &$sync_account_out, &$res);
 	if ($res == 0) {
 	  // throw some warning
 	}
+*/
 	$query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
-                accounts.balance as Balance,accounts.discount as Discount, accounts.name, accounts.max_balance, 
+                accounts.balance as Balance,accounts.discount as Discount, accounts.name, accounts.max_balance, accounts.account_flags,  
 		custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
 		custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
                 from custdata, accounts
-		where custdata.account_id = accounts.id and custdata.CardNo = '".$member_number."'";
+		where custdata.CardNo = accounts.CardNo and custdata.CardNo = '".$member_number."'";
 	$ret = array(
 		"main_frame"=>false,
 		"output"=>"",
@@ -115,7 +117,8 @@ function setMember($member, $personNumber, $row) {
 	      $IS4C_LOCAL->set("memMsg",$IS4C_LOCAL->get("memMsg")." AR");
 
 	$IS4C_LOCAL->set("memberID",$member);
-	$IS4C_LOCAL->set("memType",$row["memType"]);
+/* only one member type in mariposa right now. */
+	$IS4C_LOCAL->set("memType",1); //$row["memType"]);
 	$IS4C_LOCAL->set("lname",$row["LastName"]);
 	$IS4C_LOCAL->set("fname",$row["FirstName"]);
 	$IS4C_LOCAL->set("Type",$row["Type"]);
@@ -123,7 +126,9 @@ function setMember($member, $personNumber, $row) {
         $IS4C_LOCAL->set("MaxBalance", $row["max_balance"]);
         $IS4C_LOCAL->set("availCred", $row["max_balance"] - $row["Balance"]);
         $IS4C_LOCAL->set("accountName", $row["name"]);
+        $IS4C_LOCAL->set("accountFlags", $row["account_flags"]);
 
+/* right now in mariposa, everyone is an active member.
 	$IS4C_LOCAL->set('inactMem',0);
 	if ($IS4C_LOCAL->get("Type") == "PC") {
 		$IS4C_LOCAL->set("isMember",1);
@@ -133,6 +138,8 @@ function setMember($member, $personNumber, $row) {
 		if ($IS4C_LOCAL->get('Type') != 'REG')
 			$IS4C_LOCAL->set('inactMem',1);
 	}
+*/
+	$IS4C_LOCAL->set("isMember",1);
 
 	$IS4C_LOCAL->set("isStaff",$row["staff"]);
 	$IS4C_LOCAL->set("SSI",$row["SSI"]);

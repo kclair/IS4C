@@ -70,8 +70,13 @@ class memlist extends NoInputPage {
 		$memberID = $entered;
 		$db_a = pDataConnect();
 
-                $query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
-                          where name LIKE '".$entered."%'order by name";
+		if (isset($_REQUEST['search'])) {
+                	$query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
+                          where name = '".$entered."'";
+		}else {
+                        $query = "select CardNo, name, balance as Balance, discount as Discount from accounts 
+                          where name LIKE '".$entered."%' order by name";
+		}
 
 		$result = $db_a->query($query);
 		$num_rows = $db_a->num_rows($result);
@@ -82,11 +87,11 @@ class memlist extends NoInputPage {
                         //once we have one result, do the real query
 			$row = $db_a->fetch_array($result);
                 $query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
-                accounts.balance as Balance,accounts.discount as Discount, accounts.name,
+                accounts.balance as Balance,accounts.max_balance, accounts.discount as Discount, accounts.name, accounts.account_flags, 
                 custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
                 custdata.SSI,custdata.Purchases,custdata.NumberOfChecks,custdata.memCoupons,custdata.blueLine,custdata.Shown,custdata.id 
                 from custdata, accounts
-                where custdata.account_id = accounts.id and custdata.CardNo = '".$row["CardNo"]."'";
+                where custdata.CardNo = accounts.CardNo and custdata.CardNo = '".$row["CardNo"]."'";
                         $result = $db_a->query($query);
 			$row = $db_a->fetch_array($result);
 			setMember($row["CardNo"], $personNum,$row);
