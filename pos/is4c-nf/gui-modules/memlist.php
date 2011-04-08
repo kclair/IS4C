@@ -156,19 +156,28 @@ class memlist extends NoInputPage {
 		/* for no results, just throw up a re-do
 		 * otherwise, put results in a select box
 		 */
-		if ($num_rows < 1){
-			echo "
-			<div class=\"colored centeredDisplay\">
-				<span class=\"larger\">
-				no match found<br />next search or member number
-				</span>
-				<input type=\"text\" name=\"search\" size=\"15\"
-			       	onblur=\"\$('#search').focus();\" id=\"search\" />
-				<br />
-				press [enter] to cancel
-			</div>";
-		}
-		else {
+?>
+		<div class="colored centeredDisplay">
+			<span class="larger">
+			Enter Account name:
+			</span>
+			<input type="text" id="account-name" name="account-name" class="autocomplete" autocomplete="off" /> 
+			<br />
+			press [enter] to cancel
+		</div>
+		<script type="text/javascript">
+		<!--
+		$(function()  {
+		  $('input[name=account-name]').autoComplete({
+			ajax: '/ajax-callbacks/ajax-autocomplete.php', 
+			onSelect: function(event, ui) { window.location = '/gui-modules/memlist.php?search='+ui.data; } });
+		});
+		-->
+		</script>
+
+<?php
+/*
+
 			echo "<div class=\"listbox\">"
 				."<select name=\"search\" size=\"15\" "
 				."onblur=\"\$('#search').focus()\" id=\"search\">";
@@ -180,7 +189,6 @@ class memlist extends NoInputPage {
 					."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Customer";
 				$selectFlag = 1;
 			}
-                        */
 
 			for ($i = 0; $i < $num_rows; $i++) {
 				$row = $db->fetch_array($result);
@@ -198,6 +206,7 @@ class memlist extends NoInputPage {
 				."<div class=\"clear\"></div>";
 		}
 		echo "</form></div>";
+                        */
 	} // END body_content() FUNCTION
 }
 
