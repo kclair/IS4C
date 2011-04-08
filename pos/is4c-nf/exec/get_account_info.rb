@@ -1,11 +1,15 @@
+#!/usr/bin/ruby
+
 require 'rubygems'
 require 'mysql'
 require 'json'
 require "net/https"
 require "uri"
 
+
 exit 0 unless ARGV[0] =~ /^\d+$/
 
+outfile = File.open(File.expand_path(File.dirname(__FILE__)) + '/out', 'a')
 path = '/is4c/account/'+ARGV[0]+'/'
 
 secrets = File.open(File.expand_path(File.dirname(__FILE__)) + '/.secrets', 'r').readlines
@@ -29,7 +33,7 @@ begin
   a = JSON.parse(response.body)
   sth = dbh.prepare("REPLACE INTO accounts (CardNo, name, max_balance, balance, account_flags, account_flags_html) VALUES(?, ?, ?, ?, ?, ?)")
   sth.execute(a['id'], a['name'], a['balance_limit'], a['balance'], a['json_flags'].to_json, a['html_flags'])
-  puts 'successfully imported '+a['name']
+  outfile.puts 'successfully imported '+a['name']
 rescue Mysql::Error => e
    puts "Error code: #{e.errno}"
    puts "Error message: #{e.error}"
@@ -39,5 +43,6 @@ ensure
    # disconnect from server
    dbh.close if dbh
 end
+outfile.close
 
 exit 1

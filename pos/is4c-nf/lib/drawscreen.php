@@ -263,6 +263,9 @@ function printheaderb() {
                         $balance = $IS4C_LOCAL->get("inactMem") ? '<br>* inactive member*' : '';
 		}else {
                   $balance = "<br><span class=\"bigger\">B A L A N C E: ".number_format((double)$IS4C_LOCAL->get("Balance"),2)."</span>";
+                  if ($IS4C_LOCAL->get("MESS_status") == 0) {
+		    $balance .= "<br><span>*** Could not get balance information from MESS. Balance might be outdated. ***</span>";
+		  }
                 }
 	}
 

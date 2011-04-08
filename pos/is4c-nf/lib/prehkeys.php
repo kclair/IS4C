@@ -42,14 +42,6 @@ function clearMember(){
 
 function memberID($member_number) {
 	global $IS4C_LOCAL,$IS4C_PATH;
-        $sync_account_out = array();
-/*
-        $res = '';
-	exec($IS4C_PATH."/exec/get_account_info.rb $member_number", &$sync_account_out, &$res);
-	if ($res == 0) {
-	  // throw some warning
-	}
-*/
 	$query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
                 accounts.balance as Balance,accounts.discount as Discount, accounts.name, accounts.max_balance, accounts.account_flags,  
 		custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
@@ -106,8 +98,10 @@ function memberID($member_number) {
 
 //-------------------------------------------------
 
-function setMember($member, $personNumber, $row) {
+function setMember($member, $personNumber, $row, $mess_sync_result) {
 	global $IS4C_LOCAL;
+
+	$IS4C_LOCAL->set("MESS_status", $mess_sync_result);
 
 	$conn = pDataConnect();
 

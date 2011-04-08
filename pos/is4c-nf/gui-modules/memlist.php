@@ -86,6 +86,11 @@ class memlist extends NoInputPage {
 		if ($num_rows == 1) {
                         //once we have one result, do the real query
 			$row = $db_a->fetch_array($result);
+
+		        $sync_account_out = array();
+		        $res = '';
+			$exec = $IS4C_PATH."/exec/get_account_info.rb ".$row["CardNo"];
+		        exec($exec, &$sync_account_out, &$res);
                 $query = "select custdata.CardNo,custdata.personNum,custdata.LastName,custdata.FirstName,custdata.CashBack,
                 accounts.balance as Balance,accounts.max_balance, accounts.discount as Discount, accounts.name, accounts.account_flags, 
                 custdata.MemDiscountLimit,custdata.ChargeOk,custdata.WriteChecks,custdata.StoreCoupons,custdata.Type,custdata.memType,custdata.staff,
@@ -94,7 +99,7 @@ class memlist extends NoInputPage {
                 where custdata.CardNo = accounts.CardNo and custdata.CardNo = '".$row["CardNo"]."'";
                         $result = $db_a->query($query);
 			$row = $db_a->fetch_array($result);
-			setMember($row["CardNo"], $personNum,$row);
+			setMember($row["CardNo"], $personNum,$row,$res);
 			$IS4C_LOCAL->set("scan","scan");
 			header("Location: {$IS4C_PATH}gui-modules/pos2.php");
 			return False;
