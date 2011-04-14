@@ -162,15 +162,16 @@ class memlist extends NoInputPage {
 			Enter Account name:
 			</span>
 			<input type="text" id="account-name" name="account-name" class="autocomplete" autocomplete="off" /> 
-			<br />
-			press [enter] to cancel
+			<br /><br />
+			<a href='/gui-modules/pos2.php' style='color: white;'>click here to cancel</a>
 		</div>
 		<script type="text/javascript">
 		<!--
 		$(function()  {
 		  $('input[name=account-name]').autoComplete({
 			ajax: '/ajax-callbacks/ajax-autocomplete.php', 
-			onSelect: function(event, ui) { window.location = '/gui-modules/memlist.php?search='+ui.data; } });
+			onSelect: function(event, ui) { window.location = '/gui-modules/memlist.php?search='+ui.data.value; } });
+		  $('input[name=account-name]').focus();
 		});
 		-->
 		</script>
