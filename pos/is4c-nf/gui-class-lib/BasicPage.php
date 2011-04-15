@@ -76,8 +76,12 @@ class BasicPage {
 		echo "<head>";
 		echo "<link rel=\"stylesheet\" type=\"text/css\"
 		    href=\"{$IS4C_PATH}/is4c.css\">";
+                echo "<link rel=\"stylesheet\" type=\"text/css\"
+                    href=\"{$IS4C_PATH}/js/jquery.ui.autocomplete.css\">";
 		echo "<script type=\"text/javascript\"
 			src=\"{$IS4C_PATH}/js/jquery.js\"></script>";
+                echo "<script type=\"text/javascript\"
+                        src=\"{$IS4C_PATH}/js/jquery.ui.autocomplete.js\"></script>";
 		$this->head_content();
 		echo "</head>";
 		echo "<body>";
