@@ -56,8 +56,11 @@ function authenticate($password,$activity=1){
 	$row_g = $db_g->fetch_array($result_g);
 
 	if ($row_g["LoggedIn"] == 0) {
+		/* original query
 		$query_q = "select emp_no, FirstName, LastName from employees where EmpActive = 1 "
 			."and CashierPassword = ".$password;
+		*/
+		$query_q = "select id as emp_no, FirstName, LastName from custdata where id=".$password;
 		$result_q = $db_g->query($query_q);
 		$num_rows_q = $db_g->num_rows($result_q);
 
@@ -100,11 +103,10 @@ function authenticate($password,$activity=1){
 		// longer query but simpler. since someone is logged in already,
 		// only accept password from that person OR someone with a high
 		// frontendsecurity setting
-		$query_a = "select emp_no, FirstName, LastName "
-			."from employees "
-			."where EmpActive = 1 and "
-			."(frontendsecurity >= 30 or emp_no = ".$row_g["CashierNo"].") "
-			."and (CashierPassword = '".$password."' or AdminPassword = '".$password."')";
+		$query_a = "select id as emp_no, FirstName, LastName "
+			."from custdata "
+			."WHERE (staff = 1 or id = ".$row_g["CashierNo"].") "
+			."and (id = '".$password."')";
 
 		$result_a = $db_g->query($query_a);	
 
